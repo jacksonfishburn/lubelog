@@ -3,9 +3,9 @@ services:
     image: postgres:16-alpine
     container_name: lubelog-postgres
     environment:
-      POSTGRES_DB: lubelog
-      POSTGRES_USER: lubelog
-      POSTGRES_PASSWORD: lubelog
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_APP_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_APP_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -23,10 +23,10 @@ services:
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/lubelog
-      KC_DB_USERNAME: lubelog
-      KC_DB_PASSWORD: lubelog
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB_USERNAME: ${POSTGRES_KEYCLOAK_USER}
+      KC_DB_PASSWORD: ${POSTGRES_KEYCLOAK_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
       - "8080:8080"
     depends_on:
@@ -37,9 +37,9 @@ services:
     build: ./backend
     container_name: lubelog-backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lubelog
-      SPRING_DATASOURCE_USERNAME: lubelog
-      SPRING_DATASOURCE_PASSWORD: lubelog
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_APP_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_APP_PASSWORD}
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/lubelog
     ports:
       - "8081:8081"
