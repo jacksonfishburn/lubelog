@@ -1,4 +1,9 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8081/realms/lubelog/protocol/openid-connect/certs
   jpa:
     hibernate:
       ddl-auto: validate
