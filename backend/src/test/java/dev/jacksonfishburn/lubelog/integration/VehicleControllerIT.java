@@ -1,6 +1,9 @@
 package dev.jacksonfishburn.lubelog.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.jacksonfishburn.lubelog.TestcontainersConfiguration;
 import dev.jacksonfishburn.lubelog.dto.VehicleRequest;
+import dev.jacksonfishburn.lubelog.dto.VehicleUpdateRequest;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.entity.Vehicle;
 import dev.jacksonfishburn.lubelog.repository.UserRepository;
@@ -117,6 +121,154 @@ class VehicleControllerIT {
                 .build());
 
         mockMvc.perform(get("/api/vehicles/{id}", othersVehicle.getId()))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void listVehicles_returnsOnlyCurrentUsersVehicles() throws Exception {
+        vehicleRepository.save(Vehicle.builder()
+                .user(currentUser)
+                .year((short) 2019)
+                .make("Toyota")
+                .model("Camry")
+                .trim("SE")
+                .vin("4T1BF1FK5HU123456")
+                .nickname("Commuter")
+                .mileage(30000)
+                .build());
+
+        User otherUser = userRepository.save(User.builder()
+                .keycloakId("22222222-2222-2222-2222-222222222222")
+                .email("other-user@example.com")
+                .build());
+        vehicleRepository.save(Vehicle.builder()
+                .user(otherUser)
+                .year((short) 2021)
+                .make("Ford")
+                .model("F-150")
+                .trim("XLT")
+                .vin("1FTFW1ET1MFA12345")
+                .nickname("Work Truck")
+                .mileage(15000)
+                .build());
+
+        mockMvc.perform(get("/api/vehicles"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].make").value("Toyota"));
+    }
+
+    @Test
+    void deleteVehicle_returns204AndRemovesVehicle_whenRequestedByOwner() throws Exception {
+        Vehicle vehicle = vehicleRepository.save(Vehicle.builder()
+                .user(currentUser)
+                .year((short) 2019)
+                .make("Toyota")
+                .model("Camry")
+                .trim("SE")
+                .vin("4T1BF1FK5HU123456")
+                .nickname("Commuter")
+                .mileage(30000)
+                .build());
+
+        mockMvc.perform(delete("/api/vehicles/{id}", vehicle.getId()))
+                .andExpect(status().isNoContent());
+
+        assertThat(vehicleRepository.findById(vehicle.getId())).isEmpty();
+    }
+
+    @Test
+    void deleteVehicle_returns403_whenVehicleBelongsToAnotherUser() throws Exception {
+        User otherUser = userRepository.save(User.builder()
+                .keycloakId("22222222-2222-2222-2222-222222222222")
+                .email("other-user@example.com")
+                .build());
+
+        Vehicle othersVehicle = vehicleRepository.save(Vehicle.builder()
+                .user(otherUser)
+                .year((short) 2021)
+                .make("Ford")
+                .model("F-150")
+                .trim("XLT")
+                .vin("1FTFW1ET1MFA12345")
+                .nickname("Work Truck")
+                .mileage(15000)
+                .build());
+
+        mockMvc.perform(delete("/api/vehicles/{id}", othersVehicle.getId()))
+                .andExpect(status().isForbidden());
+
+        assertThat(vehicleRepository.findById(othersVehicle.getId())).isPresent();
+    }
+
+    @Test
+    void updateVehicle_returns200AndUpdatesFields_whenRequestedByOwner() throws Exception {
+        Vehicle vehicle = vehicleRepository.save(Vehicle.builder()
+                .user(currentUser)
+                .year((short) 2019)
+                .make("Toyota")
+                .model("Camry")
+                .trim("SE")
+                .vin("4T1BF1FK5HU123456")
+                .nickname("Commuter")
+                .mileage(30000)
+                .build());
+
+        VehicleUpdateRequest request = new VehicleUpdateRequest("Weekend Car", 35000, null, null, null, null);
+
+        mockMvc.perform(patch("/api/vehicles/{id}", vehicle.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname").value("Weekend Car"))
+                .andExpect(jsonPath("$.mileage").value(35000))
+                .andExpect(jsonPath("$.make").value("Toyota"));
+    }
+
+    @Test
+    void updateVehicle_returns400_whenMileageIsLessThanCurrentMileage() throws Exception {
+        Vehicle vehicle = vehicleRepository.save(Vehicle.builder()
+                .user(currentUser)
+                .year((short) 2019)
+                .make("Toyota")
+                .model("Camry")
+                .trim("SE")
+                .vin("4T1BF1FK5HU123456")
+                .nickname("Commuter")
+                .mileage(30000)
+                .build());
+
+        VehicleUpdateRequest request = new VehicleUpdateRequest(null, 10000, null, null, null, null);
+
+        mockMvc.perform(patch("/api/vehicles/{id}", vehicle.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void updateVehicle_returns403_whenVehicleBelongsToAnotherUser() throws Exception {
+        User otherUser = userRepository.save(User.builder()
+                .keycloakId("22222222-2222-2222-2222-222222222222")
+                .email("other-user@example.com")
+                .build());
+
+        Vehicle othersVehicle = vehicleRepository.save(Vehicle.builder()
+                .user(otherUser)
+                .year((short) 2021)
+                .make("Ford")
+                .model("F-150")
+                .trim("XLT")
+                .vin("1FTFW1ET1MFA12345")
+                .nickname("Work Truck")
+                .mileage(15000)
+                .build());
+
+        VehicleUpdateRequest request = new VehicleUpdateRequest("Stolen", null, null, null, null, null);
+
+        mockMvc.perform(patch("/api/vehicles/{id}", othersVehicle.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
 }
