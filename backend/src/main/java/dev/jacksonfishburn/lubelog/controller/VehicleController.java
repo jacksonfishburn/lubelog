@@ -1,11 +1,13 @@
 package dev.jacksonfishburn.lubelog.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.security.AuthUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,5 +40,18 @@ public class VehicleController {
     public ResponseEntity<VehicleResponse> getVehicle(@PathVariable UUID id) {
         User user = authUtils.getCurrentUser();
         return ResponseEntity.ok(vehicleService.getVehicle(user, id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<VehicleResponse>> getVehicles() {
+        User user = authUtils.getCurrentUser();
+        return ResponseEntity.ok(vehicleService.getAllVehicles(user));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicle(@PathVariable UUID id) {
+        User user = authUtils.getCurrentUser();
+        vehicleService.deleteVehicle(user, id);
+        return ResponseEntity.noContent().build();
     }
 }

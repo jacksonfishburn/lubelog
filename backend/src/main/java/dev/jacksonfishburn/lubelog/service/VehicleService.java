@@ -1,10 +1,8 @@
 package dev.jacksonfishburn.lubelog.service;
 
+import java.util.List;
 import java.util.UUID;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import dev.jacksonfishburn.lubelog.dto.VehicleRequest;
@@ -13,7 +11,6 @@ import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.entity.Vehicle;
 import dev.jacksonfishburn.lubelog.exception.AccessDeniedException;
 import dev.jacksonfishburn.lubelog.exception.ResourceNotFoundException;
-import dev.jacksonfishburn.lubelog.repository.UserRepository;
 import dev.jacksonfishburn.lubelog.repository.VehicleRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
-    private final UserRepository userRepository;
 
     public VehicleResponse createVehicle(User currentUser, VehicleRequest request) {
         Vehicle vehicle = Vehicle.builder()
@@ -49,6 +45,23 @@ public class VehicleService {
         }
 
         return toResponse(vehicle);
+    }
+
+    public List<VehicleResponse> getAllVehicles(User currentUser) {
+        return vehicleRepository.findAllByUserId(currentUser.getId()).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public void deleteVehicle(User currentUser, UUID id) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle", id));
+
+        if (!vehicle.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException();
+        }
+
+        vehicleRepository.delete(vehicle);
     }
 
     private VehicleResponse toResponse(Vehicle vehicle) {
