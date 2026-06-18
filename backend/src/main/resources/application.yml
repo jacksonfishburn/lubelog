@@ -1,15 +1,22 @@
+server:
+  port: 8081
+
 spring:
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:8081/realms/lubelog/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI}
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
+        default_schema: app
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
+    schemas: app
+    default-schema: app
     enabled: true
     locations: classpath:db/migration
