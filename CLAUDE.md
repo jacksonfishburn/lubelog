@@ -1,3 +1,5 @@
+> **Standing instruction:** At the end of every session, update this file to reflect the current state of the project — what's been built, the tech stack, key design decisions, and what was just added and why. Keep it accurate; this is the source of truth for the next session.
+
 # LubeLog
 
 LubeLog is a vehicle maintenance tracker API. This is a learning project and portfolio piece. **Backend quality is the priority.** Frontend will be handled separately later.
@@ -82,6 +84,7 @@ Typical subpackages:
 - **`service_log_details` uses flexible key/value pairs**, not fixed columns. New service types don't require schema changes.
 - **App never handles passwords or OAuth handshakes.** Keycloak owns all auth. Spring Boot only validates JWTs issued by Keycloak.
 - **Single database** shared by Keycloak and the backend (kept simple for this stage).
+- **Users are auto-provisioned on first authenticated request**, not via a signup endpoint. `UserProvisioningFilter` runs after `BearerTokenAuthenticationFilter` in the security filter chain and calls `UserService.provisionIfAbsent(keycloakId, email)`, which creates a local `users` row keyed to the JWT's `sub` claim if one doesn't already exist. The unique constraint on `keycloak_id` is the actual race-condition guard; the service just catches and swallows the resulting `DataIntegrityViolationException` if two first-requests land at once.
 
 ---
 
@@ -92,6 +95,8 @@ Typical subpackages:
 - Spring Boot validates JWTs using Keycloak's JWKS endpoint
 - The `users` table stores a local record keyed to `keycloak_id` (the `sub` claim)
 - All API endpoints require a valid JWT unless explicitly public
+- `UserProvisioningFilter` (registered via `addFilterAfter(..., BearerTokenAuthenticationFilter.class)` in `SecurityConfig`) provisions the local `users` row on first authenticated request — see Key Design Decisions
+- `SecurityConfig`'s production filter chain bean is disabled in tests via `app.security.test-override.enabled=true`, which activates `support.TestSecurityConfig` instead (permits all requests, seeds a fake `JwtAuthenticationToken`). This lets integration tests run without real Keycloak wiring.
 
 
 ---
@@ -117,20 +122,28 @@ Follow standard Spring Boot best practices:
 - Docker Compose set up (app, PostgreSQL, Keycloak — single shared DB)
 - Flyway migrations created
 - JPA entities and repositories created to match migrations
+- `SecurityConfig` wired up: stateless JWT resource-server auth, `/actuator/**` public, everything else requires a valid Keycloak-issued JWT
+- Vehicle create/get endpoints (`VehicleController` → `VehicleService`), scoped to the authenticated user, with a 403 on cross-user access
+- VIN lookup proxying the NHTSA vPIC API (`VinClient` / `VinController`)
+- User auto-provisioning: `UserProvisioningFilter` + `UserService.provisionIfAbsent` create a local `users` row on first authenticated request (see Key Design Decisions)
+- Integration test scaffolding: Testcontainers Postgres, `TestSecurityConfig` test-only filter chain that fakes a JWT principal, `VehicleControllerIT`
 
 ---
 
 ## Build Order (Remaining)
 
+1. Service types (seed global defaults)
+2. Vehicle services (per-vehicle config)
+3. Service logs + log details
+4. Upcoming/reminders calculation
+5. CORS + rate limiting (Bucket4j)
+6. Springdoc / Swagger UI
+7. GitHub Actions CI/CD pipeline
 
-1. Vehicle CRUD + VIN lookup
-2. Keycloak Spring Boot integration (JWT validation, user sync)
-3. Service types (seed global defaults)
-4. Vehicle services (per-vehicle config)
-5. Service logs + log details
-6. Upcoming/reminders calculation
-7. CORS + rate limiting (Bucket4j)
-8. Springdoc / Swagger UI
-9. GitHub Actions CI/CD pipeline
+---
+
+## Most Recently Added
+
+**User provisioning** (`UserProvisioningFilter`, `UserService.provisionIfAbsent`): until now, a `users` row had to exist before any vehicle endpoint would work (`VehicleService.getCurrentUser` throws `ResourceNotFoundException` otherwise), but nothing created that row outside of tests manually inserting one. This closes that gap — the first authenticated request from a given Keycloak identity now provisions its local user record automatically, with no new endpoint and no schema change. The filter is wired into the production filter chain only (`addFilterAfter` in `SecurityConfig`); the test filter chain in `TestSecurityConfig` is unaffected and still seeds users manually in `@BeforeEach`.
 
 ---
