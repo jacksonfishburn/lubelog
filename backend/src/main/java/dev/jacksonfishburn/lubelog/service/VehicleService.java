@@ -24,9 +24,7 @@ public class VehicleService {
     private final VehicleRepository vehicleRepository;
     private final UserRepository userRepository;
 
-    public VehicleResponse createVehicle(VehicleRequest request) {
-        User currentUser = getCurrentUser();
-
+    public VehicleResponse createVehicle(User currentUser, VehicleRequest request) {
         Vehicle vehicle = Vehicle.builder()
                 .user(currentUser)
                 .year(request.year())
@@ -42,26 +40,15 @@ public class VehicleService {
         return toResponse(vehicle);
     }
 
-    public VehicleResponse getVehicle(UUID id) {
+    public VehicleResponse getVehicle(User currentUser, UUID id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", id));
 
-        User currentUser = getCurrentUser();
         if (!vehicle.getUser().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException();
         }
 
         return toResponse(vehicle);
-    }
-
-    private User getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof JwtAuthenticationToken jwtAuthentication) {
-            String keycloakId = jwtAuthentication.getToken().getSubject();
-            return userRepository.findByKeycloakId(keycloakId)
-                    .orElseThrow(() -> new ResourceNotFoundException("User", keycloakId));
-        }
-        throw new AccessDeniedException();
     }
 
     private VehicleResponse toResponse(Vehicle vehicle) {

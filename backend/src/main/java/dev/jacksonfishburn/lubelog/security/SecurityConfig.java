@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.config;
+package dev.jacksonfishburn.lubelog.security;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

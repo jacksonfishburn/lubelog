@@ -1,0 +1,7 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://dummy-issuer
+          jwk-set-uri: http://dummy-jwk-set-uri

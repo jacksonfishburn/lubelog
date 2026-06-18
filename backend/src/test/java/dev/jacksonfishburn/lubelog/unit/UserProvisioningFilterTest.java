@@ -19,7 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import dev.jacksonfishburn.lubelog.config.UserProvisioningFilter;
+import dev.jacksonfishburn.lubelog.security.UserProvisioningFilter;
 import dev.jacksonfishburn.lubelog.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;

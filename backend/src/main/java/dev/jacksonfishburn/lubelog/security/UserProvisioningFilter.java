@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.config;
+package dev.jacksonfishburn.lubelog.security;
 
 import java.io.IOException;
 
