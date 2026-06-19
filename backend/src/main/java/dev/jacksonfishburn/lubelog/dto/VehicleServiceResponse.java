@@ -1,0 +1,14 @@
+package dev.jacksonfishburn.lubelog.dto;
+
+import java.time.Instant;
+import java.util.UUID;
+
+public record VehicleServiceResponse(
+        UUID id,
+        UUID vehicleId,
+        UUID serviceTypeId,
+        String serviceTypeName,
+        Integer intervalMiles,
+        Integer intervalMonths,
+        Instant createdAt) {
+}
