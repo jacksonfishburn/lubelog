@@ -1,7 +1,7 @@
 CREATE TABLE vehicle_services (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     vehicle_id      UUID NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
-    service_id      UUID NOT NULL REFERENCES services(id) ON DELETE RESTRICT,
+    service_id      UUID NOT NULL REFERENCES services(id) ON DELETE CASCADE,
     interval_miles  INT,
     interval_months SMALLINT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),

@@ -30,7 +30,7 @@ public class VehicleService {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "service_id", nullable = false)
-    private Service service;
+    private ServiceType service;
 
     @Column(name = "interval_miles")
     private Integer intervalMiles;
