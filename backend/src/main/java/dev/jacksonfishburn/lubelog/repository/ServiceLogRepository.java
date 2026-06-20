@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface ServiceLogRepository extends JpaRepository<ServiceLog, UUID> {
     List<ServiceLog> findAllByVehicleServiceId(UUID vehicleServiceId);
+    List<ServiceLog> findAllByVehicleService_Vehicle_Id(UUID vehicleId);
 }
 
