@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lubelog
+    username: lubelog_app
+    password: lubelog_password
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/lubelog
+          jwk-set-uri: http://localhost:8080/realms/lubelog/protocol/openid-connect/certs

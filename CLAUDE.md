@@ -1,149 +1,80 @@
-> **Standing instruction:** At the end of every session, update this file to reflect the current state of the project — what's been built, the tech stack, key design decisions, and what was just added and why. Keep it accurate; this is the source of truth for the next session.
+# LubeLog — Agent Context
 
-# LubeLog
+## What Is LubeLog
 
-LubeLog is a vehicle maintenance tracker API. This is a learning project and portfolio piece. **Backend quality is the priority.** Frontend will be handled separately later.
+Vehicle maintenance tracker — learning project and portfolio piece. Users log service history, configure per-vehicle service intervals, and get upcoming maintenance reminders. Supports individuals and small fleets. Backend quality is the priority. Frontend comes later.
 
----
+I'm doing this project first and foremost to learn software design and how to use and integrate industry standard tooling. I am a student and want to become a backend engineer. I don't care that much about the frontend besides it being decent, but i want to understand the backend of this project really well.
 
-## Project Purpose
-
-Help users track vehicle service history and upcoming maintenance. Users can have many vehicles, app will be useful for individuals and businesses with fleets of vehicles.
+**Stack:** Java + Spring Boot, PostgreSQL, Flyway, Docker + Docker Compose, Keycloak (OAuth2 / Google login), JUnit + Mockito + Testcontainers, Bucket4j (rate limiting), Springdoc (OpenAPI / Swagger UI).
 
 ---
 
-## Tech Stack
+## Where It's At
 
-| Layer            | Technology                                                |
-| ---------------- | --------------------------------------------------------- |
-| Language         | Java (Spring Boot)                                        |
-| Database         | PostgreSQL                                                |
-| Migrations       | Flyway (owns schema — Hibernate DDL auto is **disabled**) |
-| Auth             | Keycloak (self-hosted, OAuth2 + Google login)             |
-| Containerization | Docker + Docker Compose                                   |
-| CI/CD            | GitHub Actions → SSH deploy to VPS                        |
-| VIN Lookup       | NHTSA vPIC API (free, no key required)                    |
-| API Docs         | Springdoc (OpenAPI / Swagger UI)                          |
-| Testing          | JUnit + Mockito + Testcontainers                          |
-| Monitoring       | Spring Actuator                                           |
+Done:
 
----
+- Schema + Flyway migrations
+- Keycloak + Spring Boot auth integration (Google login, JWT validation)
+- Vehicle CRUD + VIN lookup (NHTSA vPIC API)
+- Service types (global defaults seeded at startup + user custom types, with duplicate guard)
+- Established vertical slice pattern: entity → repository → service → controller → DTOs → custom exceptions → integration tests
+- Vehicle services (per-vehicle service configuration)
+- Service logs + log details
 
-## Package Structure
+Up next (in no particular order):
 
-Root package: `dev.jacksonfishburn.lubelog`
+- CORS + rate limiting (Bucket4j)
+- Springdoc / Swagger UI
+- Environment-based config profiles (dev vs prod)
+- Local dev setup (run Spring Boot natively against a local Postgres, bypass or mock Keycloak)
+- Seeded test data
+- React front end
+- GitHub Actions CI/CD pipeline
 
-Standard Maven layout: `src/main/java/dev/jacksonfishburn/lubelog/`
+**Post-MVP:**
 
-Typical subpackages:
-
-- `controller` — REST controllers
-- `service` — business logic
-- `repository` — Spring Data JPA repositories
-- `entity` — JPA entities
-- `dto` — request/response DTOs (keep separate from entities)
-- `config` — Spring config classes (security, CORS, etc.)
-- `exception` — custom exceptions and global exception handler
+- Email notifications for upcoming/overdue services
+- AI-assisted parts lookup per service type
+- Scheduled reminders sent over email
 
 ---
 
-## Database Schema
+## How We Work
 
-**users** — local reference to Keycloak user
+**Discuss before building.** When I bring up a feature, the default mode is to talk through the design — approach, structure, tradeoffs — before any code is written. Ask questions, flag concerns, make sure we're aligned.
 
-- `id`, `keycloak_id`, `email`, `created_at`
+**When I'm ready to build,** I'll say something like **"now build it"** or **"go ahead and implement it."** That's the signal to write actual code.
 
-**vehicles**
-
-- `id`, `user_id`, `year`, `make`, `model`, `trim`, `vin`, `nickname`, `mileage`, `created_at`
-
-**service_types** — global defaults + user-created custom types
-
-- `id`, `user_id` (NULL for globals), `name`, `is_global`, `created_at`
-- Global defaults are seeded at startup (oil change, tire rotation, etc.)
-
-**vehicle_services** — per-vehicle service configuration
-
-- `id`, `vehicle_id`, `service_id`, `interval_miles`, `interval_months`, `created_at`
-
-**service_logs**
-
-- `id`, `vehicle_service_id`, `done_at_mileage`, `done_at_date`, `cost`, `notes`, `created_at`
-
-**service_log_details** — flexible key/value pairs for parts/notes
-
-- `id`, `service_log_id`, `key`, `value`
+**If something is ambiguous, ask before assuming.** One focused question is better than building on a wrong assumption.
 
 ---
 
-## Key Design Decisions
+## How to Write Code
 
-- **Flyway owns the schema.** Never use `spring.jpa.hibernate.ddl-auto=create` or `update`. All schema changes go through versioned Flyway migrations.
-- **Service interval is per vehicle, not per service type.** `service_types` holds a suggested default. `vehicle_services` holds the actual interval for that specific vehicle. This lets the same service type (e.g. Oil Change) have different intervals on different vehicles.
-- **VIN lookup is best-effort.** Proxies NHTSA vPIC API. If it returns no result, the user fills in vehicle info manually.
-- **`service_log_details` uses flexible key/value pairs**, not fixed columns. New service types don't require schema changes.
-- **App never handles passwords or OAuth handshakes.** Keycloak owns all auth. Spring Boot only validates JWTs issued by Keycloak.
-- **Single database** shared by Keycloak and the backend (kept simple for this stage).
-- **Users are auto-provisioned on first authenticated request**, not via a signup endpoint. `UserProvisioningFilter` runs after `BearerTokenAuthenticationFilter` in the security filter chain and calls `UserService.provisionIfAbsent(keycloakId, email)`, which creates a local `users` row keyed to the JWT's `sub` claim if one doesn't already exist. The unique constraint on `keycloak_id` is the actual race-condition guard; the service just catches and swallows the resulting `DataIntegrityViolationException` if two first-requests land at once.
+**Add, don't modify.** Introduce new classes and methods rather than changing things that already work. Each addition should have a clear, single responsibility. Don't spread logic into existing files unless there's a strong reason.
 
----
+**Be intentional and precise.** A new service method, a new DTO, a new controller endpoint — each thing should do one thing clearly. No clever abstractions, no unnecessary generalization. If something can be its own class or method, it should be.
 
-## Auth
+**Follow the established vertical slice pattern** and all other existing patterns.
 
-- Keycloak runs as a Docker container alongside the app
-- Supports "Sign in with Google" via Keycloak
-- Spring Boot validates JWTs using Keycloak's JWKS endpoint
-- The `users` table stores a local record keyed to `keycloak_id` (the `sub` claim)
-- All API endpoints require a valid JWT unless explicitly public
-- `UserProvisioningFilter` (registered via `addFilterAfter(..., BearerTokenAuthenticationFilter.class)` in `SecurityConfig`) provisions the local `users` row on first authenticated request — see Key Design Decisions
-- `SecurityConfig`'s production filter chain bean is disabled in tests via `app.security.test-override.enabled=true`, which activates `support.TestSecurityConfig` instead (permits all requests, seeds a fake `JwtAuthenticationToken`). This lets integration tests run without real Keycloak wiring.
+**Never modify existing Flyway migrations.** New schema changes get a new migration file.
 
+**Hibernate DDL auto is disabled.** Flyway owns the schema. JPA never generates or alters tables.
 
 ---
 
-## Coding Conventions
+## Testing
 
-Follow standard Spring Boot best practices:
-
-- Controllers are thin — delegate to service layer
-- Services contain all business logic
-- Repositories are Spring Data JPA interfaces; avoid native queries unless necessary
-- Use DTOs for all request/response bodies; never expose entities directly
-- Use `@RestControllerAdvice` for global exception handling
-- Prefer constructor injection over field injection
-- Validate request bodies with Jakarta Bean Validation (`@Valid`, `@NotNull`, etc.)
-- Return meaningful HTTP status codes (`201 Created`, `404 Not Found`, etc.)
+Integration tests for all endpoints — happy paths and key error cases. Unit tests for service-layer logic where it's non-trivial. Testcontainers for anything that touches the database.
 
 ---
 
-## What's Done
+## Key Design Decisions (Don't Violate These)
 
-- Spring Boot project initialized
-- Docker Compose set up (app, PostgreSQL, Keycloak — single shared DB)
-- Flyway migrations created
-- JPA entities and repositories created to match migrations
-- `SecurityConfig` wired up: stateless JWT resource-server auth, `/actuator/**` public, everything else requires a valid Keycloak-issued JWT
-- Vehicle create/get endpoints (`VehicleController` → `VehicleService`), scoped to the authenticated user, with a 403 on cross-user access
-- VIN lookup proxying the NHTSA vPIC API (`VinClient` / `VinController`)
-- User auto-provisioning: `UserProvisioningFilter` + `UserService.provisionIfAbsent` create a local `users` row on first authenticated request (see Key Design Decisions)
-- Integration test scaffolding: Testcontainers Postgres, `TestSecurityConfig` test-only filter chain that fakes a JWT principal, `VehicleControllerIT`
-
----
-
-## Build Order (Remaining)
-
-1. Service types (seed global defaults)
-2. Vehicle services (per-vehicle config)
-3. Service logs + log details
-4. Upcoming/reminders calculation
-5. CORS + rate limiting (Bucket4j)
-6. Springdoc / Swagger UI
-7. GitHub Actions CI/CD pipeline
-
----
-
-## Most Recently Added
-
-**User provisioning** (`UserProvisioningFilter`, `UserService.provisionIfAbsent`): until now, a `users` row had to exist before any vehicle endpoint would work (`VehicleService.getCurrentUser` throws `ResourceNotFoundException` otherwise), but nothing created that row outside of tests manually inserting one. This closes that gap — the first authenticated request from a given Keycloak identity now provisions its local user record automatically, with no new endpoint and no schema change. The filter is wired into the production filter chain only (`addFilterAfter` in `SecurityConfig`); the test filter chain in `TestSecurityConfig` is unaffected and still seeds users manually in `@BeforeEach`.
-
----
+- **Service intervals live on `vehicle_services`, not `service_types`.** The same service type can have different intervals on different vehicles. `service_types` holds a suggested default only.
+- **`service_log_details` uses flexible key/value pairs** — no fixed columns for service-specific data. New service types never require schema changes.
+- **VIN lookup is best-effort.** If NHTSA returns nothing, the user fills in manually.
+- **Auth is Keycloak's responsibility.** The app only validates JWTs. It never handles passwords or OAuth handshakes.
+- **The entity is `ServiceType` (not `Service`)** to avoid collision with Spring's `@Service` annotation. The table is still `services` via `@Table(name = "services")`.
+- **Single shared database** for Keycloak and the backend (chosen for simplicity — intentional tradeoff).
