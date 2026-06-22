@@ -21,13 +21,13 @@ Done:
 - Established vertical slice pattern: entity → repository → service → controller → DTOs → custom exceptions → integration tests
 - Vehicle services (per-vehicle service configuration)
 - Service logs + log details
+- Environment-based config profiles (dev vs prod)
+- Local dev setup (run Spring Boot natively against a local Postgres, bypass or mock Keycloak)
 
 Up next (in no particular order):
 
 - CORS + rate limiting (Bucket4j)
 - Springdoc / Swagger UI
-- Environment-based config profiles (dev vs prod)
-- Local dev setup (run Spring Boot natively against a local Postgres, bypass or mock Keycloak)
 - Seeded test data
 - React front end
 - GitHub Actions CI/CD pipeline
@@ -61,6 +61,8 @@ Up next (in no particular order):
 **Never modify existing Flyway migrations.** New schema changes get a new migration file.
 
 **Hibernate DDL auto is disabled.** Flyway owns the schema. JPA never generates or alters tables.
+
+**Keep the project overview current.** `docs/project-overview.md` is the source-of-truth summary I hand to an AI for design discussions. Whenever we land a change that affects it — new endpoint, schema migration, design decision, stack/tooling addition, or status shift (something moving from "up next" to "done") — update that file in the same change and bump its "Last verified" date.
 
 ---
 
