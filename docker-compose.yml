@@ -50,5 +50,13 @@ services:
       keycloak:
         condition: service_started
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
 volumes:
   postgres_data:
