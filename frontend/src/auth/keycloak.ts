@@ -17,3 +17,7 @@ export function initKeycloak(): Promise<boolean> {
   });
   return initPromise;
 }
+
+export function logout(): void {
+  void keycloak.logout({ redirectUri: window.location.origin });
+}

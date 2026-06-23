@@ -1,9 +1,11 @@
 import { keycloak } from '../auth/keycloak';
+import { ApiError } from '../lib/errors';
 
 const API_BASE = '/api';
 
 interface ApiErrorBody {
   message?: string;
+  status?: number;
 }
 
 async function ensureFreshToken(): Promise<void> {
@@ -38,7 +40,7 @@ export async function apiFetch<T>(path: string, options: RequestInit = {}): Prom
     } catch {
       // ignore non-JSON error bodies
     }
-    throw new Error(message);
+    throw new ApiError(message, res.status);
   }
 
   if (res.status === 204) {

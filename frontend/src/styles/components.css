@@ -203,6 +203,7 @@
   display: none;
 }
 .rail-footer__email { font-size: 11px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rail-footer__logout { flex-shrink: 0; }
 
 /* ── Top titlebar ─────────────────────────────────────────────────────────── */
 .titlebar {

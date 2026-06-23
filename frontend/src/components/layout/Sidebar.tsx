@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
+import { logout } from '../../auth/keycloak';
 import { useAppState } from '../../context/AppState';
 import { useCurrentUser } from '../../hooks/useCurrentUser';
+import { Button } from '../shared/Button';
 
 interface NavItem {
   to: string;
@@ -59,6 +61,17 @@ export function Sidebar({ collapsed }: SidebarProps) {
           <div className="label-mono">Signed in</div>
           <div className="rail-footer__email">{user?.email ?? 'loading…'}</div>
         </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="rail-footer__logout"
+          onClick={logout}
+          title="Sign out"
+          aria-label="Sign out"
+        >
+          {collapsed ? '↪' : 'Sign out'}
+        </Button>
       </div>
     </nav>
   );

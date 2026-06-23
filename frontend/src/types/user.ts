@@ -1,8 +1,6 @@
-// Mirrors the `users` row exposed by the backend (see project-overview Data Model).
-// There is no UserResponse DTO yet; this is the minimal identity the UI needs.
+// Identity shown in the UI. Sourced from the Keycloak JWT (sub + email).
+// Local `users.id` / `createdAt` are backend-only until a GET /api/me exists.
 export interface User {
-  id: string;
   keycloakId: string;
   email: string;
-  createdAt: string; // ISO-8601 instant
 }

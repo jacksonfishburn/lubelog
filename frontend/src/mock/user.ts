@@ -9,14 +9,12 @@
 import type { User } from '../types';
 import { delay } from '../lib/latency';
 
-// Shared owner id — every mock vehicle/service belongs to this user.
+// Shared owner id — every mock vehicle belongs to this user.
 export const MOCK_USER_ID = '11111111-1111-1111-1111-111111111111';
 
 export const mockUser: User = {
-  id: MOCK_USER_ID,
   keycloakId: 'kc-sub-mock-0001',
   email: 'jacksonfishburn@gmail.com',
-  createdAt: '2026-01-04T18:22:10Z',
 };
 
 export async function getCurrentUser(): Promise<User> {
