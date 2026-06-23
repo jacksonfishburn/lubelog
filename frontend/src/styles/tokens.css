@@ -1,0 +1,100 @@
+/* ── Design tokens ───────────────────────────────────────────────────────────
+   Retro-futurism: neutral stone-gray base, ONE accent (orange), sharp beveled
+   panels with pronounced depth, mono type for labels/readouts.
+
+   WARM PALETTE (previous — restore these if you want the warmer look back):
+   --bg-deep: #1e1c19;
+   --bg: #262420;
+   --surface-1: #2f2c28;
+   --surface-2: #383530;
+   --surface-3: #43403b;
+   --surface-inset: #1a1816;
+   --border: #4a4641;
+   --border-strong: #56524c;
+   --bevel-light: rgba(255, 248, 235, 0.08);
+   --text: #c8c2b8;
+   --text-dim: #8a847a;
+   --text-strong: #f0ebe3;
+   --status-none: #7a746a;
+   body gradient: #2a2723 → #1e1c19
+   body vignette: rgba(180, 140, 90, 0.06) bottom-left
+   weave highlight: rgba(255, 248, 235, 0.014)
+*/
+:root {
+  /* surfaces (neutral gray, dark → light) */
+  --bg-deep: #1a1a19;
+  --bg: #222221;
+  --surface-1: #2a2a28;
+  --surface-2: #323230;
+  --surface-3: #3d3d3a;
+  --surface-inset: #181817;
+
+  /* borders / bevels */
+  --border: #484846;
+  --border-strong: #545452;
+  --bevel-light: rgba(255, 255, 255, 0.07);
+  --bevel-dark: rgba(0, 0, 0, 0.55);
+
+  /* text */
+  --text: #c5c5c0;
+  --text-dim: #888884;
+  --text-strong: #eeeee8;
+
+  /* accent — orange, the only brand color */
+  --accent: #ff7a1a;
+  --accent-bright: #ff912f;
+  --accent-dim: #b8540f;
+  --accent-glow: rgba(255, 122, 26, 0.2);
+  --accent-wash: rgba(255, 122, 26, 0.12);
+
+  /* status (semantic, distinct from accent) */
+  --status-overdue: #ff4d4d;
+  --status-overdue-wash: rgba(255, 77, 77, 0.14);
+  --status-due-soon: #f5a623;
+  --status-due-soon-wash: rgba(245, 166, 35, 0.14);
+  --status-ok: #4fd197;
+  --status-ok-wash: rgba(79, 209, 151, 0.12);
+  --status-none: #767672;
+  --status-none-wash: rgba(118, 118, 114, 0.14);
+
+  /* depth (elevation) */
+  --elev-1:
+    0 1px 3px rgba(0, 0, 0, 0.38),
+    0 1px 0 rgba(255, 255, 255, 0.035);
+  --elev-2:
+    0 4px 12px rgba(0, 0, 0, 0.42),
+    0 1px 4px rgba(0, 0, 0, 0.32),
+    0 1px 0 rgba(255, 255, 255, 0.04);
+  --elev-3:
+    0 10px 24px rgba(0, 0, 0, 0.48),
+    0 3px 8px rgba(0, 0, 0, 0.38),
+    0 1px 0 rgba(255, 255, 255, 0.045);
+  --bevel:
+    inset 0 1px 0 var(--bevel-light),
+    inset 0 -2px 0 var(--bevel-dark);
+  --inset-deep:
+    inset 0 2px 5px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+  /* geometry — sharp / boxy */
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 2px;
+
+  /* spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* type */
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', ui-monospace, 'SFMono-Regular',
+    Consolas, 'Liberation Mono', monospace;
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --rail-w: 232px;
+  --rail-w-collapsed: 52px;
+  --titlebar-h: 48px;
+}
