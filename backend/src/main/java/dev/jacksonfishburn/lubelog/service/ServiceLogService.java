@@ -52,7 +52,6 @@ public class ServiceLogService {
         Vehicle vehicle = vehicleService.getVehicle();
 
         Integer currentMileage = getVehicleMileage(vehicle);
-        requireValidMileage(request.doneAtMileage(), currentMileage);
 
         ServiceLog log = ServiceLog.builder()
                 .vehicleService(vehicleService)
@@ -81,7 +80,6 @@ public class ServiceLogService {
         Vehicle vehicle = log.getVehicleService().getVehicle();
 
         Integer currentMileage = getVehicleMileage(vehicle);
-        requireValidMileage(request.doneAtMileage(), currentMileage);
 
         log.setDoneAtMileage(request.doneAtMileage());
         log.setDoneAtDate(request.doneAtDate());
@@ -132,12 +130,6 @@ public class ServiceLogService {
     private void setVehicleMileage(Vehicle vehicle, Integer mileage) {
         vehicle.setMileage(mileage);
         vehicleRepository.save(vehicle);
-    }
-
-    private void requireValidMileage(Integer doneAtMileage, Integer currentMileage) {
-        if (doneAtMileage != null && currentMileage != null && doneAtMileage < currentMileage) {
-            throw new InvalidServiceLogMileageException(doneAtMileage, currentMileage);
-        }
     }
 
     private Integer computeMileageDue(VehicleService vehicleService, Integer doneMileage) {
