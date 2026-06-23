@@ -23,6 +23,9 @@ cd backend && ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 cd frontend && npm install && npm run dev
 ```
 
+Copy `frontend/.env.example` to `frontend/.env` if you need to override Keycloak settings
+(defaults target `http://localhost:8080`, realm `lubelog`, client `lubelog-frontend`).
+
 The `dev` Spring profile (`backend/src/main/resources/application-dev.yml`) points the
 datasource and Keycloak issuer/JWKS URIs at `localhost` instead of the Docker-network
 hostnames used by the containerized backend.

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { CreateLogRequest, LogDetailRequest, ServiceLog } from '../types';
-import * as api from '../mock/servicelogs';
+import * as api from '../api/servicelogs';
 import { errorMessage } from '../lib/errors';
 
 // All logs for a vehicle (across its configured services). Mutations re-fetch

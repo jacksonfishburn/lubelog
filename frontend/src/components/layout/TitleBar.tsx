@@ -36,7 +36,6 @@ export function TitleBar({ railCollapsed, onToggleRail }: TitleBarProps) {
         <RailToggleIcon collapsed={railCollapsed} />
       </button>
       <span className="titlebar__title">Maintenance Terminal</span>
-      <span className="titlebar__mock right">◉ MOCK DATA · NO BACKEND</span>
     </header>
   );
 }

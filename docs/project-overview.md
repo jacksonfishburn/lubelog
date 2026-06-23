@@ -3,12 +3,12 @@
 > **Maintenance note:** This document is the source of truth for the *current* state of the
 > project and is meant to be handed to an AI for design discussions. Keep it accurate as the
 > project evolves — see the maintenance rule in `CLAUDE.md`. Last verified against the codebase
-> on **2026-06-20**.
+> on **2026-06-22**.
 
 LubeLog is a vehicle maintenance tracker — a learning project and portfolio piece. Users log
 service history, configure per-vehicle service intervals, and (will) get upcoming maintenance
 reminders. It supports individuals and small fleets. **Backend quality is the priority;** the
-frontend is currently a scaffold only.
+frontend is currently wired to the real backend API (via Vite proxy) with Keycloak login.
 
 ---
 
@@ -33,7 +33,7 @@ frontend is currently a scaffold only.
 | Containerization | Docker + Docker Compose                                           |
 | Testing          | JUnit + Mockito + Testcontainers (Postgres) + spring-security-test |
 | Monitoring       | Spring Boot Actuator (dependency present; `/actuator/**` is public) |
-| Frontend         | React 19 + Vite + TypeScript (scaffold only)                      |
+| Frontend         | React 19 + Vite + TypeScript; Keycloak-js (PKCE) + authenticated `apiFetch` client |
 
 **Not yet added** (planned): Springdoc/Swagger UI, Bucket4j rate limiting, CORS config,
 GitHub Actions CI/CD, Redis.
@@ -65,14 +65,17 @@ GitHub Actions CI/CD, Redis.
 - Next-due reminder calculation (computed on the fly — see below).
 - Environment-based config profiles (`dev` for native local runs vs. default/containerized).
 - Established vertical-slice pattern with integration + unit test coverage.
-- Frontend scaffold (Vite/React/TS) and native local dev setup (`docs/dev-setup.md`).
+- Frontend: Keycloak-js auth (PKCE, silent token refresh), `src/api/*` clients calling the
+  backend through Vite's `/api` proxy; hooks consume the API layer (mock layer retained for
+  reference).
+- Frontend scaffold and native local dev setup (`docs/dev-setup.md`).
 
 **Up next** (no particular order):
 
 - CORS + rate limiting (Bucket4j).
 - Springdoc / Swagger UI.
 - Seeded test data.
-- React front end (real implementation).
+- React front end (feature completion beyond API wiring).
 - GitHub Actions CI/CD pipeline.
 
 **Post-MVP:**

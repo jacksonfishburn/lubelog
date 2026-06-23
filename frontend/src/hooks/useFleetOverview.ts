@@ -2,9 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import type { ServiceLog, Vehicle, VehicleService } from '../types';
 import type { ServiceStatus, ServiceStatusResult } from '../lib/serviceStatus';
 import { SERVICE_STATUS, computeServiceStatus, worstStatus } from '../lib/serviceStatus';
-import { listVehicles } from '../mock/vehicles';
-import { listVehicleServices } from '../mock/vehicleservices';
-import { listLogsByVehicle } from '../mock/servicelogs';
+import { listVehicles } from '../api/vehicles';
+import { listVehicleServices } from '../api/vehicleservices';
+import { listLogsByVehicle } from '../api/servicelogs';
 import { errorMessage } from '../lib/errors';
 
 export interface ServiceWithStatus {

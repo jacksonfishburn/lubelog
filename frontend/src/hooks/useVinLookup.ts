@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import type { VinDecodeResult } from '../types';
-import * as api from '../mock/vehicles';
+import * as api from '../api/vehicles';
 import { errorMessage } from '../lib/errors';
 
 // Simulates the NHTSA round-trip with a dedicated loading state, so the VIN

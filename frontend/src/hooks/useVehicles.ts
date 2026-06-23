@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { CreateVehicleRequest, UpdateVehicleRequest, Vehicle } from '../types';
-import * as api from '../mock/vehicles';
+import * as api from '../api/vehicles';
 import { errorMessage } from '../lib/errors';
 
 // Owns the vehicle collection + CRUD. Components never touch the mock layer

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { VehicleService, VehicleServiceRequest } from '../types';
-import * as api from '../mock/vehicleservices';
+import * as api from '../api/vehicleservices';
 import { errorMessage } from '../lib/errors';
 
 // Per-vehicle service configuration. Pass null when no vehicle is selected;

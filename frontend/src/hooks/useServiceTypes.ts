@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { CreateServiceTypeRequest, ServiceType } from '../types';
-import * as api from '../mock/servicetypes';
+import * as api from '../api/servicetypes';
 import { errorMessage } from '../lib/errors';
 
 export function useServiceTypes() {

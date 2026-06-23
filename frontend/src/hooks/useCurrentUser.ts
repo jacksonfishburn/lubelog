@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { User } from '../types';
-import { getCurrentUser } from '../mock/user';
+import { getCurrentUser } from '../api/user';
 import { errorMessage } from '../lib/errors';
 
 // Resolves the (mock) signed-in user. Swap the import to the real identity
