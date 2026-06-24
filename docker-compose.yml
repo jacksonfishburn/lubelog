@@ -19,12 +19,16 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
     container_name: lubelog-keycloak
-    command: start-dev
+    command: ${KEYCLOAK_START_COMMAND:-start-dev}
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/lubelog
       KC_DB_USERNAME: ${POSTGRES_APP_USER}
       KC_DB_PASSWORD: ${POSTGRES_APP_PASSWORD}
+      KC_HOSTNAME: lubelog-auth.jacksonfishburn.dev
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
@@ -32,6 +36,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          memory: 256M
 
   backend:
     build: ./backend
@@ -49,6 +57,10 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_started
+    deploy:
+      resources:
+        reservations:
+          memory: 128M
 
   frontend:
     build: ./frontend
