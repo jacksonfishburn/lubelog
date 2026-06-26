@@ -11,3 +11,5 @@ public class LubelogApplication {
 	}
 
 }
+
+// test cicd
