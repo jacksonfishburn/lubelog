@@ -25,7 +25,7 @@ services:
       KC_DB_URL: jdbc:postgresql://postgres:5432/lubelog
       KC_DB_USERNAME: ${POSTGRES_APP_USER}
       KC_DB_PASSWORD: ${POSTGRES_APP_PASSWORD}
-      KC_HOSTNAME: lubelog-auth.jacksonfishburn.dev
+      KC_HOSTNAME: ${KC_HOSTNAME}
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_PROXY_HEADERS: xforwarded

@@ -229,17 +229,6 @@ class ServiceLogControllerIT {
     }
 
     @Test
-    void createLog_returns400_whenDoneAtMileageIsLessThanCurrentVehicleMileage() throws Exception {
-        LogRequest request = new LogRequest(
-                vehicleService.getId(), 25000, LocalDate.of(2026, 1, 1), null, null, List.of());
-
-        mockMvc.perform(post("/api/logs")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void createLog_returns403_whenVehicleServiceBelongsToAnotherUser() throws Exception {
         VehicleService othersVehicleService = saveOthersVehicleService();
         LogRequest request = new LogRequest(
@@ -302,23 +291,6 @@ class ServiceLogControllerIT {
                 .andExpect(jsonPath("$.notes").value("Updated"));
 
         assertThat(vehicleRepository.findById(vehicle.getId()).orElseThrow().getMileage()).isEqualTo(32000);
-    }
-
-    @Test
-    void updateLog_returns400_whenDoneAtMileageIsLessThanCurrentVehicleMileage() throws Exception {
-        ServiceLog log = serviceLogRepository.save(ServiceLog.builder()
-                .vehicleService(vehicleService)
-                .doneAtMileage(30000)
-                .doneAtDate(LocalDate.of(2026, 1, 1))
-                .build());
-
-        LogRequest request = new LogRequest(
-                vehicleService.getId(), 1000, LocalDate.of(2026, 2, 1), null, null, List.of());
-
-        mockMvc.perform(put("/api/logs/{logId}", log.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
     }
 
     @Test

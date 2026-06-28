@@ -60,7 +60,7 @@ public class VehicleService {
         vehicleRepository.delete(vehicle);
     }
 
-    public void updateMileage(Vehicle vehicle, int newMileage) {
+    void updateMileage(Vehicle vehicle, int newMileage) {
         if (newMileage < vehicle.getMileage()) {
             throw new InvalidMileageException(newMileage, vehicle.getMileage());
         }
@@ -96,7 +96,7 @@ public class VehicleService {
         return toResponse(vehicle);
     }
 
-    private Vehicle getOwnedVehicle(User currentUser, UUID id) {
+    Vehicle getOwnedVehicle(User currentUser, UUID id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle", id));
 

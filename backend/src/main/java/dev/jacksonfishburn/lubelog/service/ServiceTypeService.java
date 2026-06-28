@@ -64,6 +64,19 @@ public class ServiceTypeService {
         serviceRepository.delete(serviceType);
     }
 
+    ServiceType getServiceType(User currentUser, UUID serviceTypeId) {
+        ServiceType serviceType = serviceRepository.findById(serviceTypeId)
+                .orElseThrow(() -> new ResourceNotFoundException("ServiceType", serviceTypeId));
+
+        boolean accessible = serviceType.isGlobal()
+                || (serviceType.getUser() != null && serviceType.getUser().getId().equals(currentUser.getId()));
+        if (!accessible) {
+            throw new AccessDeniedException();
+        }
+
+        return serviceType;
+    }
+
     private ServiceTypeResponse toResponse(ServiceType serviceType) {
         return new ServiceTypeResponse(
                 serviceType.getId(),

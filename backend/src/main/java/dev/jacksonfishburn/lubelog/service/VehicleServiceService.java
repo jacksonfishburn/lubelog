@@ -15,8 +15,6 @@ import dev.jacksonfishburn.lubelog.exception.AccessDeniedException;
 import dev.jacksonfishburn.lubelog.exception.DuplicateVehicleServiceException;
 import dev.jacksonfishburn.lubelog.exception.InvalidServiceIntervalException;
 import dev.jacksonfishburn.lubelog.exception.ResourceNotFoundException;
-import dev.jacksonfishburn.lubelog.repository.ServiceRepository;
-import dev.jacksonfishburn.lubelog.repository.VehicleRepository;
 import dev.jacksonfishburn.lubelog.repository.VehicleServiceRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -25,20 +23,23 @@ import lombok.RequiredArgsConstructor;
 public class VehicleServiceService {
 
     private final VehicleServiceRepository vehicleServiceRepository;
-    private final VehicleRepository vehicleRepository;
-    private final ServiceRepository serviceRepository;
+
+    private final dev.jacksonfishburn.lubelog.service.VehicleService vehicleServiceBean;
+    private final ServiceTypeService serviceTypeService;
 
     public List<VehicleServiceResponse> getVehicleServices(User currentUser, UUID vehicleId) {
-        Vehicle vehicle = getOwnedVehicle(currentUser, vehicleId);
+        Vehicle vehicle = vehicleServiceBean.getOwnedVehicle(currentUser, vehicleId);
         return vehicleServiceRepository.findAllByVehicleId(vehicle.getId()).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public VehicleServiceResponse createVehicleService(User currentUser, UUID vehicleId, VehicleServiceRequest request) {
-        Vehicle vehicle = getOwnedVehicle(currentUser, vehicleId);
+    public VehicleServiceResponse createVehicleService(User currentUser,
+                                                       UUID vehicleId,
+                                                       VehicleServiceRequest request) {
+        Vehicle vehicle = vehicleServiceBean.getOwnedVehicle(currentUser, vehicleId);
         requireValidInterval(request);
-        ServiceType serviceType = getAccessibleServiceType(currentUser, request.serviceTypeId());
+        ServiceType serviceType = serviceTypeService.getServiceType(currentUser, request.serviceTypeId());
 
         if (vehicleServiceRepository.findByVehicleIdAndServiceId(vehicle.getId(), serviceType.getId()).isPresent()) {
             throw new DuplicateVehicleServiceException(serviceType.getName());
@@ -60,13 +61,19 @@ public class VehicleServiceService {
         return toResponse(vehicleService);
     }
 
-    public VehicleServiceResponse updateVehicleService(User currentUser, UUID vehicleId, UUID vsId, VehicleServiceRequest request) {
+    public VehicleServiceResponse updateVehicleService(User currentUser,
+                                                       UUID vehicleId,
+                                                       UUID vsId,
+                                                       VehicleServiceRequest request) {
         VehicleService vehicleService = getOwnedVehicleService(currentUser, vehicleId, vsId);
         requireValidInterval(request);
-        ServiceType serviceType = getAccessibleServiceType(currentUser, request.serviceTypeId());
+        ServiceType serviceType = serviceTypeService.getServiceType(currentUser, request.serviceTypeId());
 
         if (!serviceType.getId().equals(vehicleService.getService().getId())
-                && vehicleServiceRepository.findByVehicleIdAndServiceId(vehicleService.getVehicle().getId(), serviceType.getId()).isPresent()) {
+                && vehicleServiceRepository.
+                findByVehicleIdAndServiceId(
+                        vehicleService.getVehicle().getId(),
+                        serviceType.getId()).isPresent()) {
             throw new DuplicateVehicleServiceException(serviceType.getName());
         }
 
@@ -89,35 +96,15 @@ public class VehicleServiceService {
         }
     }
 
-    private ServiceType getAccessibleServiceType(User currentUser, UUID serviceTypeId) {
-        ServiceType serviceType = serviceRepository.findById(serviceTypeId)
-                .orElseThrow(() -> new ResourceNotFoundException("ServiceType", serviceTypeId));
-
-        boolean accessible = serviceType.isGlobal()
-                || (serviceType.getUser() != null && serviceType.getUser().getId().equals(currentUser.getId()));
-        if (!accessible) {
-            throw new AccessDeniedException();
-        }
-
-        return serviceType;
-    }
-
-    private Vehicle getOwnedVehicle(User currentUser, UUID vehicleId) {
-        Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle", vehicleId));
-
-        if (!vehicle.getUser().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException();
-        }
-
-        return vehicle;
+    VehicleService validateVehicleServiceOwnership(User currentUser, UUID vsId) {
+        return getOwnedVehicleService(currentUser, null, vsId);
     }
 
     private VehicleService getOwnedVehicleService(User currentUser, UUID vehicleId, UUID vsId) {
         VehicleService vehicleService = vehicleServiceRepository.findById(vsId)
                 .orElseThrow(() -> new ResourceNotFoundException("VehicleService", vsId));
 
-        if (!vehicleService.getVehicle().getId().equals(vehicleId)) {
+        if (vehicleId != null && !vehicleService.getVehicle().getId().equals(vehicleId)) {
             throw new ResourceNotFoundException("VehicleService", vsId);
         }
 
