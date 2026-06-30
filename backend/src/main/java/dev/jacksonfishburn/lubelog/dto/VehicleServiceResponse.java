@@ -10,5 +10,6 @@ public record VehicleServiceResponse(
         String serviceTypeName,
         Integer intervalMiles,
         Integer intervalMonths,
+        boolean remindWhenDue,
         Instant createdAt) {
 }

@@ -7,5 +7,6 @@ import jakarta.validation.constraints.NotNull;
 public record VehicleServiceRequest(
         @NotNull UUID serviceTypeId,
         Integer intervalMiles,
-        Integer intervalMonths) {
+        Integer intervalMonths,
+        Boolean remindWhenDue) {
 }

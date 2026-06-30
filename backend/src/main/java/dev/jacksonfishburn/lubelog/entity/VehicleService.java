@@ -38,6 +38,10 @@ public class VehicleService {
     @Column(name = "interval_months")
     private Short intervalMonths;
 
+    @Column(name = "remind_when_due", nullable = false)
+    @Builder.Default
+    private boolean remindWhenDue = false;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

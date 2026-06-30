@@ -50,6 +50,7 @@ public class VehicleServiceService {
                 .service(serviceType)
                 .intervalMiles(request.intervalMiles())
                 .intervalMonths(toShort(request.intervalMonths()))
+                .remindWhenDue(resolveRemindWhenDue(request.remindWhenDue()))
                 .build();
 
         vehicleService = vehicleServiceRepository.save(vehicleService);
@@ -80,6 +81,7 @@ public class VehicleServiceService {
         vehicleService.setService(serviceType);
         vehicleService.setIntervalMiles(request.intervalMiles());
         vehicleService.setIntervalMonths(toShort(request.intervalMonths()));
+        vehicleService.setRemindWhenDue(resolveRemindWhenDue(request.remindWhenDue()));
 
         vehicleService = vehicleServiceRepository.save(vehicleService);
         return toResponse(vehicleService);
@@ -119,6 +121,10 @@ public class VehicleServiceService {
         return value != null ? value.shortValue() : null;
     }
 
+    private boolean resolveRemindWhenDue(Boolean remindWhenDue) {
+        return Boolean.TRUE.equals(remindWhenDue);
+    }
+
     private VehicleServiceResponse toResponse(VehicleService vehicleService) {
         Integer intervalMonths = vehicleService.getIntervalMonths() != null
                 ? vehicleService.getIntervalMonths().intValue()
@@ -131,6 +137,7 @@ public class VehicleServiceService {
                 vehicleService.getService().getName(),
                 vehicleService.getIntervalMiles(),
                 intervalMonths,
+                vehicleService.isRemindWhenDue(),
                 vehicleService.getCreatedAt());
     }
 }

@@ -45,7 +45,8 @@ public class VehicleServiceController {
     }
 
     @GetMapping("/{vsId}")
-    public ResponseEntity<VehicleServiceResponse> getVehicleService(@PathVariable UUID vehicleId, @PathVariable UUID vsId) {
+    public ResponseEntity<VehicleServiceResponse> getVehicleService(
+            @PathVariable UUID vehicleId, @PathVariable UUID vsId) {
         User user = authUtils.getCurrentUser();
         return ResponseEntity.ok(vehicleServiceService.getVehicleService(user, vehicleId, vsId));
     }

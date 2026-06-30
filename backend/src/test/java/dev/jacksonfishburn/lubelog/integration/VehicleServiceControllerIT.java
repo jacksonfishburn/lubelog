@@ -167,7 +167,7 @@ class VehicleServiceControllerIT {
 
     @Test
     void createVehicleService_returns201AndPersistsVehicleService() throws Exception {
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null, null);
 
         mockMvc.perform(post("/api/vehicles/{vehicleId}/services", vehicle.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -178,12 +178,52 @@ class VehicleServiceControllerIT {
                 .andExpect(jsonPath("$.serviceTypeId").value(globalServiceType.getId().toString()))
                 .andExpect(jsonPath("$.serviceTypeName").value("Oil Change"))
                 .andExpect(jsonPath("$.intervalMiles").value(5000))
-                .andExpect(jsonPath("$.intervalMonths").doesNotExist());
+                .andExpect(jsonPath("$.intervalMonths").doesNotExist())
+                .andExpect(jsonPath("$.remindWhenDue").value(false));
+    }
+
+    @Test
+    void createVehicleService_persistsRemindWhenDue_whenTrue() throws Exception {
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null, true);
+
+        mockMvc.perform(post("/api/vehicles/{vehicleId}/services", vehicle.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.remindWhenDue").value(true));
+
+        assertThat(vehicleServiceRepository.findAll()).singleElement()
+                .extracting(VehicleService::isRemindWhenDue)
+                .isEqualTo(true);
+    }
+
+    @Test
+    void updateVehicleService_canToggleRemindWhenDue() throws Exception {
+        VehicleService vehicleService = vehicleServiceRepository.save(VehicleService.builder()
+                .vehicle(vehicle)
+                .service(globalServiceType)
+                .intervalMiles(5000)
+                .remindWhenDue(false)
+                .build());
+
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null, true);
+
+        mockMvc.perform(put("/api/vehicles/{vehicleId}/services/{vsId}", vehicle.getId(), vehicleService.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.remindWhenDue").value(true));
+
+        assertThat(vehicleServiceRepository.findById(vehicleService.getId()))
+                .isPresent()
+                .get()
+                .extracting(VehicleService::isRemindWhenDue)
+                .isEqualTo(true);
     }
 
     @Test
     void createVehicleService_returns400_whenBothIntervalsAreNull() throws Exception {
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), null, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), null, null, null);
 
         mockMvc.perform(post("/api/vehicles/{vehicleId}/services", vehicle.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -200,7 +240,7 @@ class VehicleServiceControllerIT {
                 .intervalMiles(5000)
                 .build());
 
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 7500, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 7500, null, null);
 
         mockMvc.perform(post("/api/vehicles/{vehicleId}/services", vehicle.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -217,7 +257,7 @@ class VehicleServiceControllerIT {
                 .isGlobal(false)
                 .build());
 
-        VehicleServiceRequest request = new VehicleServiceRequest(othersServiceType.getId(), 5000, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(othersServiceType.getId(), 5000, null, null);
 
         mockMvc.perform(post("/api/vehicles/{vehicleId}/services", vehicle.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -227,7 +267,7 @@ class VehicleServiceControllerIT {
 
     @Test
     void createVehicleService_returns404_whenVehicleDoesNotExist() throws Exception {
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null, null);
 
         mockMvc.perform(post("/api/vehicles/{vehicleId}/services", UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -249,7 +289,7 @@ class VehicleServiceControllerIT {
                 .mileage(15000)
                 .build());
 
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 5000, null, null);
 
         mockMvc.perform(post("/api/vehicles/{vehicleId}/services", othersVehicle.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -325,7 +365,7 @@ class VehicleServiceControllerIT {
                 .intervalMiles(5000)
                 .build());
 
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 7500, 6);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 7500, 6, null);
 
         mockMvc.perform(put("/api/vehicles/{vehicleId}/services/{vsId}", vehicle.getId(), vehicleService.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -343,7 +383,7 @@ class VehicleServiceControllerIT {
                 .intervalMiles(5000)
                 .build());
 
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), null, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), null, null, null);
 
         mockMvc.perform(put("/api/vehicles/{vehicleId}/services/{vsId}", vehicle.getId(), vehicleService.getId())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -370,7 +410,7 @@ class VehicleServiceControllerIT {
                 .intervalMiles(5000)
                 .build());
 
-        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 7500, null);
+        VehicleServiceRequest request = new VehicleServiceRequest(globalServiceType.getId(), 7500, null, null);
 
         mockMvc.perform(put("/api/vehicles/{vehicleId}/services/{vsId}", othersVehicle.getId(), othersVehicleService.getId())
                         .contentType(MediaType.APPLICATION_JSON)

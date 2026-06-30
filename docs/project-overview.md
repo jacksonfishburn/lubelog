@@ -3,7 +3,7 @@
 > **Maintenance note:** This document is the source of truth for the *current* state of the
 > project and is meant to be handed to an AI for design discussions. Keep it accurate as the
 > project evolves — see the maintenance rule in `CLAUDE.md`. Last verified against the codebase
-> on **2026-06-22**.
+> on **2026-06-30**.
 
 LubeLog is a vehicle maintenance tracker — a learning project and portfolio piece. Users log
 service history, configure per-vehicle service intervals, and (will) get upcoming maintenance
@@ -166,7 +166,7 @@ All tables in the `app` schema. UUID primary keys (`gen_random_uuid()`), `create
   Fuel Filter.
 
 **vehicle_services** (per-vehicle service configuration)
-`id, vehicle_id → vehicles (cascade), service_id → services (cascade), interval_miles, interval_months, created_at`
+`id, vehicle_id → vehicles (cascade), service_id → services (cascade), interval_miles, interval_months, remind_when_due (default false), created_at`
 - Unique `(vehicle_id, service_id)`.
 - Check constraint: at least one of `interval_miles` / `interval_months` must be set.
 
@@ -204,9 +204,9 @@ All under `/api`, all require a valid JWT. Ownership is enforced in the service 
 **Vehicle Services** (`/api/vehicles/{vehicleId}/services`)
 
 - `GET` — list configured services for the vehicle
-- `POST` — activate a service type on the vehicle (set interval)
+- `POST` — activate a service type on the vehicle (set interval; optional `remindWhenDue`, defaults to false)
 - `GET /{vsId}`
-- `PUT /{vsId}` — update config
+- `PUT /{vsId}` — update config (including `remindWhenDue`)
 - `DELETE /{vsId}`
 
 **Service Logs** (`/api/logs`) — *flat, not nested under vehicles*
