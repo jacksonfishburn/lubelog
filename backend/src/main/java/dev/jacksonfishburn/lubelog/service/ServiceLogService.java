@@ -46,6 +46,13 @@ public class ServiceLogService {
                 .toList();
     }
 
+    public LogResponse getMostRecentLog(VehicleService vehicleService) {
+        return serviceLogRepository
+                .findFirstByVehicleServiceIdOrderByDoneAtDateDesc(vehicleService.getId())
+                .map(this::toResponse)
+                .orElse(null);
+    }
+
     public LogResponse createLog(User currentUser, LogRequest request) {
         VehicleService vehicleService =
                 vehicleServiceService.validateVehicleServiceOwnership(currentUser, request.vehicleServiceId());
