@@ -109,7 +109,7 @@ Guiding rules (from `CLAUDE.md`):
 
 `dev.jacksonfishburn.lubelog`
 
-- `entity` — `User`, `Vehicle`, `ServiceType`, `VehicleService`, `ServiceLog`, `ServiceLogDetail`
+- `entity` — `User`, `Vehicle`, `ServiceType`, `VehicleService`, `ServiceLog`, `ServiceLogDetail`, `ServiceReminder`
 - `repository` — Spring Data JPA repositories
 - `service` — business logic (`VehicleService`, `ServiceTypeService`, `VehicleServiceService`, `ServiceLogService`, `UserService`)
 - `controller` — REST controllers
@@ -176,6 +176,10 @@ All tables in the `app` schema. UUID primary keys (`gen_random_uuid()`), `create
 **service_log_details** — flexible key/value pairs (no fixed columns)
 `id, service_log_id → service_logs (cascade), key, value`
 - Unique `(service_log_id, key)`.
+
+**service_reminders** (per-vehicle-service reminder send state)
+`id, vehicle_service_id → vehicle_services (cascade), user_id → users (cascade), sent_at, date_reminded_at, mileage_reminded_at, channel (default 'EMAIL')`
+- Tracks when date- and mileage-dimension reminder emails were last sent for deduplication.
 
 ---
 
