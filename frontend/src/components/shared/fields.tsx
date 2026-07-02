@@ -121,6 +121,31 @@ export function SelectField({ label, value, onChange, options, placeholder, requ
   );
 }
 
+interface CheckboxFieldProps {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  hint?: ReactNode;
+  className?: string;
+}
+
+export function CheckboxField({ label, checked, onChange, hint, className }: CheckboxFieldProps) {
+  return (
+    <div className={`field${className ? ` ${className}` : ''}`}>
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          className="checkbox__input"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+        />
+        <span className="checkbox__label">{label}</span>
+      </label>
+      {hint && <span className="field__hint">{hint}</span>}
+    </div>
+  );
+}
+
 interface TextAreaFieldProps {
   label: string;
   value: string;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Modal } from '../shared/Modal';
 import { Button } from '../shared/Button';
-import { NumberField, SelectField } from '../shared/fields';
+import { CheckboxField, NumberField, SelectField } from '../shared/fields';
 import { Banner } from '../shared/Banner';
 import { errorMessage } from '../../lib/errors';
 import type { ServiceType, VehicleService, VehicleServiceRequest } from '../../types';
@@ -28,6 +28,7 @@ export function VehicleServiceForm({
   const [serviceTypeId, setServiceTypeId] = useState(vehicleService?.serviceTypeId ?? '');
   const [intervalMiles, setIntervalMiles] = useState<number | null>(vehicleService?.intervalMiles ?? null);
   const [intervalMonths, setIntervalMonths] = useState<number | null>(vehicleService?.intervalMonths ?? null);
+  const [remindWhenDue, setRemindWhenDue] = useState(vehicleService?.remindWhenDue ?? false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export function VehicleServiceForm({
     if (!validate()) return;
     setSaving(true);
     try {
-      await onSave({ serviceTypeId, intervalMiles, intervalMonths });
+      await onSave({ serviceTypeId, intervalMiles, intervalMonths, remindWhenDue });
       onClose();
     } catch (e) {
       setSubmitError(errorMessage(e));
@@ -123,6 +124,13 @@ export function VehicleServiceForm({
       <span className="field__hint">
         Set either or both. Whichever comes first determines when the service is due.
       </span>
+
+      <CheckboxField
+        label="Get email reminder"
+        checked={remindWhenDue}
+        onChange={setRemindWhenDue}
+        hint="Emails you when this service is coming due — by date or mileage."
+      />
     </Modal>
   );
 }

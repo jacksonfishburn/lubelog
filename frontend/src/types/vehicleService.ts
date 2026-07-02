@@ -9,6 +9,7 @@ export interface VehicleService {
   serviceTypeName: string; // denormalized for display
   intervalMiles: number | null;
   intervalMonths: number | null;
+  remindWhenDue: boolean; // email the owner when this service comes due
   createdAt: string; // ISO-8601 instant
 }
 
@@ -17,4 +18,5 @@ export interface VehicleServiceRequest {
   serviceTypeId: string;
   intervalMiles?: number | null;
   intervalMonths?: number | null;
+  remindWhenDue?: boolean;
 }
