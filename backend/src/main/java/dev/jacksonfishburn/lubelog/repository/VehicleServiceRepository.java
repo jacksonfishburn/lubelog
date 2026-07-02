@@ -10,5 +10,6 @@ import java.util.UUID;
 public interface VehicleServiceRepository extends JpaRepository<VehicleService, UUID> {
     List<VehicleService> findAllByVehicleId(UUID vehicleId);
     Optional<VehicleService> findByVehicleIdAndServiceId(UUID vehicleId, UUID serviceId);
+    List<VehicleService> findAllByRemindWhenDueTrue();
 }
 

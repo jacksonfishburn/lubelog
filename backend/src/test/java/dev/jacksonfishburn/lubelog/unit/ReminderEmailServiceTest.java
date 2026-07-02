@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -47,7 +48,8 @@ class ReminderEmailServiceTest {
                 "Oil Change",
                 new VehicleInfo("Commuter", (short) 2019, "Toyota", "Camry"),
                 30000,
-                35000);
+                35000,
+                null);
 
         service.sendServiceReminder(request);
 
@@ -64,7 +66,8 @@ class ReminderEmailServiceTest {
                 "Oil Change",
                 new VehicleInfo("Commuter", (short) 2019, "Toyota", "Camry"),
                 30000,
-                35000);
+                35000,
+                null);
 
         service.sendServiceReminder(request);
 
@@ -80,7 +83,8 @@ class ReminderEmailServiceTest {
                 "Oil Change",
                 new VehicleInfo("Commuter", (short) 2019, "Toyota", "Camry"),
                 null,
-                35000);
+                35000,
+                null);
 
         service.sendServiceReminder(request);
 
@@ -96,6 +100,7 @@ class ReminderEmailServiceTest {
                 "Brake Inspection",
                 new VehicleInfo(null, (short) 2019, "Toyota", "Camry"),
                 null,
+                null,
                 null);
 
         service.sendServiceReminder(request);
@@ -106,6 +111,41 @@ class ReminderEmailServiceTest {
         String body = sent.getContent().toString();
         assertThat(body).doesNotContain("Current mileage:");
         assertThat(body).doesNotContain("Due at:");
+        assertThat(body).doesNotContain("Due by:");
+    }
+
+    @Test
+    void sendServiceReminder_includesDateBlock_whenDueDatePresent() throws Exception {
+        ServiceReminderEmailRequest request = new ServiceReminderEmailRequest(
+                TO_ADDRESS,
+                "Brake Inspection",
+                new VehicleInfo("Commuter", (short) 2019, "Toyota", "Camry"),
+                null,
+                null,
+                LocalDate.of(2026, 7, 2));
+
+        service.sendServiceReminder(request);
+
+        String body = captureSentMessage().getContent().toString();
+        assertThat(body).contains("Due by: Jul 2, 2026");
+        assertThat(body).doesNotContain("Due at:");
+    }
+
+    @Test
+    void sendServiceReminder_includesBothBlocks_whenMileageAndDatePresent() throws Exception {
+        ServiceReminderEmailRequest request = new ServiceReminderEmailRequest(
+                TO_ADDRESS,
+                "Oil Change",
+                new VehicleInfo("Commuter", (short) 2019, "Toyota", "Camry"),
+                30000,
+                35000,
+                LocalDate.of(2026, 7, 2));
+
+        service.sendServiceReminder(request);
+
+        String body = captureSentMessage().getContent().toString();
+        assertThat(body).contains("Due at: 35,000 miles");
+        assertThat(body).contains("Due by: Jul 2, 2026");
     }
 
     @Test
@@ -114,6 +154,7 @@ class ReminderEmailServiceTest {
                 TO_ADDRESS,
                 "Tire Rotation",
                 new VehicleInfo("   ", (short) 2021, "Ford", "F-150"),
+                null,
                 null,
                 null);
 
@@ -129,6 +170,7 @@ class ReminderEmailServiceTest {
                 TO_ADDRESS,
                 "Coolant Flush",
                 new VehicleInfo(null, null, null, null),
+                null,
                 null,
                 null);
 

@@ -98,6 +98,10 @@ public class VehicleServiceService {
         }
     }
 
+    public List<VehicleService> findServicesToRemind() {
+        return vehicleServiceRepository.findAllByRemindWhenDueTrue();
+    }
+
     VehicleService validateVehicleServiceOwnership(User currentUser, UUID vsId) {
         return getOwnedVehicleService(currentUser, null, vsId);
     }

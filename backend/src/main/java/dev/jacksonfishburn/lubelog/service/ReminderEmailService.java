@@ -1,5 +1,9 @@
 package dev.jacksonfishburn.lubelog.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -59,6 +63,13 @@ public class ReminderEmailService {
                     .append(" miles\n");
         }
 
+        if (request.dueDate() != null) {
+            body.append('\n');
+            body.append("Due by: ")
+                    .append(formatDate(request.dueDate()))
+                    .append('\n');
+        }
+
         body.append("\nLog in to LubeLog to record service or update your vehicle.");
         return body.toString();
     }
@@ -85,5 +96,9 @@ public class ReminderEmailService {
 
     private String formatMileage(int mileage) {
         return "%,d".formatted(mileage);
+    }
+
+    private String formatDate(LocalDate date) {
+        return date.format(DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH));
     }
 }
