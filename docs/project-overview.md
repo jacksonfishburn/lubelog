@@ -111,7 +111,7 @@ Guiding rules (from `CLAUDE.md`):
 
 - `entity` — `User`, `Vehicle`, `ServiceType`, `VehicleService`, `ServiceLog`, `ServiceLogDetail`, `ServiceReminder`
 - `repository` — Spring Data JPA repositories
-- `service` — business logic (`VehicleService`, `ServiceTypeService`, `VehicleServiceService`, `ServiceLogService`, `UserService`)
+- `service` — business logic (`VehicleService`, `ServiceTypeService`, `VehicleServiceService`, `ServiceLogService`, `UserService`, `ReminderEmailService`)
 - `controller` — REST controllers
 - `dto` — request/response records
 - `client` — `VinClient` (NHTSA vPIC integration)

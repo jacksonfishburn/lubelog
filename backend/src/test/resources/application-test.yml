@@ -5,3 +5,10 @@ spring:
         jwt:
           issuer-uri: http://dummy-issuer
           jwk-set-uri: http://dummy-jwk-set-uri
+  mail:
+    host: localhost
+    port: 1025
+
+app:
+  mail:
+    from: test@lubelog.local
