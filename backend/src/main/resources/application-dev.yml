@@ -9,6 +9,8 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/realms/lubelog
           jwk-set-uri: http://localhost:8080/realms/lubelog/protocol/openid-connect/certs
+  config:
+    import: optional:file:${user.dir}/../.env[.properties]
 
 app:
   base-url: http://localhost:8081
