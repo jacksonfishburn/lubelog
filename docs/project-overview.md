@@ -107,7 +107,7 @@ Guiding rules (from `CLAUDE.md`):
 - `controller` — REST controllers
 - `dto` — request/response records
 - `client` — `VinClient` (NHTSA vPIC integration)
-- `security` — `SecurityConfig`, `UserProvisioningFilter`, `AuthUtils`, `RateLimitFilter`, `RateLimitBucketStore`
+- `security` — `SecurityConfig`, `UserProvisioningFilter`, `AuthUtils`, `RateLimitFilter`, `RateLimitBucketStore`, `RateLimitBucketSweeper`
 - `config` — `OpenApiConfig`, `RateLimitProperties` (`@ConfigurationProperties(prefix = "app.ratelimit")`)
 - `exception` — `LubeLogException` base + specific exceptions + `GlobalExceptionHandler`
 
@@ -146,9 +146,12 @@ New error cases should extend `LubeLogException`.
 It runs *after* `UserProvisioningFilter`, so the JWT is already in the `SecurityContextHolder`; the
 bucket key is `user:<sub>` read straight from the token (no DB hit), falling back to `ip:<addr>`
 when unauthenticated. `RateLimitBucketStore` holds one in-memory Bucket4j bucket per key in a
-`ConcurrentHashMap` (lazy creation, no eviction — fine for a single instance; would need Redis to go
-multi-instance). Limits come from `RateLimitProperties` (`app.ratelimit.{enabled,capacity,refill-tokens,refill-duration}`;
-prod default 100 tokens / minute). Because the filter runs before the `DispatcherServlet`, it can't
+`ConcurrentHashMap` (lazy creation; would need Redis to go multi-instance). `RateLimitBucketSweeper`
+is a `@Scheduled` task (every 5 min) that evicts fully-replenished buckets — a bucket back at full
+capacity is identical to a fresh one, so removing it is behaviorally safe and bounds map growth under
+heavy/hostile traffic (e.g. many distinct anonymous IPs). Limits come from `RateLimitProperties`
+(`app.ratelimit.{enabled,capacity,refill-tokens,refill-duration}`; prod default 100 tokens / minute).
+Because the filter runs before the `DispatcherServlet`, it can't
 rely on `GlobalExceptionHandler` — on rejection it writes the `429` body directly in the same
 `{status, message}` shape. The filter is wired into both `SecurityConfig` and (for tests)
 `support.TestSecurityConfig`, and is disabled by default in the `test` profile.
@@ -282,7 +285,7 @@ cd frontend && npm install && npm run dev
   `VehicleServiceControllerIT`, `ServiceLogControllerIT`. `RateLimitFilterIT` re-enables rate
   limiting (disabled by default in tests) with `capacity=5` and asserts the 6th request returns `429`.
 - **Unit tests** for non-trivial service logic: `UserServiceTest`, `UserProvisioningFilterTest`,
-  `VinClientTest`.
+  `VinClientTest`, `RateLimitBucketStoreTest` (bucket reuse + fully-replenished eviction).
 - `support.TestSecurityConfig` provides a mock JWT filter chain via the `test-override` property
   so tests authenticate without a real Keycloak.
 </content>

@@ -26,6 +26,21 @@ public class RateLimitBucketStore {
         return buckets.computeIfAbsent(key, ignored -> newBucket());
     }
 
+    /**
+     * Drops every bucket that has refilled back to full capacity. A fully-replenished bucket is
+     * behaviorally identical to a freshly-created one, so removing it changes nothing for the caller
+     * — the next request simply rebuilds an equivalent bucket. This bounds map growth to keys seen
+     * within roughly the last refill interval and is safe to run concurrently with live traffic.
+     */
+    public void evictFullyReplenishedBuckets() {
+        buckets.values().removeIf(bucket -> bucket.getAvailableTokens() >= properties.capacity());
+    }
+
+    /** Number of buckets currently tracked. Exposed for the sweeper and tests. */
+    public int trackedBucketCount() {
+        return buckets.size();
+    }
+
     private Bucket newBucket() {
         Bandwidth limit = Bandwidth.builder()
                 .capacity(properties.capacity())
