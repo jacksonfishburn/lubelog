@@ -3,7 +3,7 @@
 > **Maintenance note:** This document is the source of truth for the *current* state of the
 > project and is meant to be handed to an AI for design discussions. Keep it accurate as the
 > project evolves — see the maintenance rule in `CLAUDE.md`. Last verified against the codebase
-> on **2026-06-30**.
+> on **2026-07-03**.
 
 LubeLog is a vehicle maintenance tracker — a learning project and portfolio piece. Users log
 service history, configure per-vehicle service intervals, and (will) get upcoming maintenance
@@ -33,10 +33,10 @@ frontend is currently wired to the real backend API (via Vite proxy) with Keyclo
 | Containerization | Docker + Docker Compose                                           |
 | Testing          | JUnit + Mockito + Testcontainers (Postgres) + spring-security-test |
 | Monitoring       | Spring Boot Actuator (dependency present; `/actuator/**` is public) |
+| Rate limiting    | Bucket4j (`bucket4j_jdk17-core`) — in-memory, per-user token bucket over `/api/**` |
 | Frontend         | React 19 + Vite + TypeScript; Keycloak-js (PKCE) + authenticated `apiFetch` client |
 
-**Not yet added** (planned): Springdoc/Swagger UI, Bucket4j rate limiting, CORS config,
-GitHub Actions CI/CD, Redis.
+**Not yet added** (planned): CORS config, GitHub Actions CI/CD, Redis.
 
 ### Ports
 
@@ -65,22 +65,14 @@ GitHub Actions CI/CD, Redis.
 - Next-due reminder calculation (computed on the fly — see below).
 - Environment-based config profiles (`dev` for native local runs vs. default/containerized).
 - Established vertical-slice pattern with integration + unit test coverage.
-- Frontend: Keycloak-js auth (PKCE, silent token refresh), `src/api/*` clients calling the
-  backend through Vite's `/api` proxy; hooks consume the API layer (mock layer retained for
-  reference).
-- Frontend scaffold and native local dev setup (`docs/dev-setup.md`).
+- Springdoc / Swagger UI.
+- React Frontend
+- GitHub Actions CI/CD pipeline.
+- Email notifications for upcoming/overdue services; scheduled reminders.
+- Rate limiting (Bucket4j) — global per-user token bucket over `/api/**`.
 
 **Up next** (no particular order):
 
-- CORS + rate limiting (Bucket4j).
-- Springdoc / Swagger UI.
-- Seeded test data.
-- React front end (feature completion beyond API wiring).
-- GitHub Actions CI/CD pipeline.
-
-**Post-MVP:**
-
-- Email notifications for upcoming/overdue services; scheduled reminders.
 - AI-assisted parts lookup per service type.
 - Redis caching, full monitoring stack (Grafana + Prometheus), cost analytics,
   multi-user vehicle sharing.
@@ -115,7 +107,8 @@ Guiding rules (from `CLAUDE.md`):
 - `controller` — REST controllers
 - `dto` — request/response records
 - `client` — `VinClient` (NHTSA vPIC integration)
-- `security` — `SecurityConfig`, `UserProvisioningFilter`, `AuthUtils`
+- `security` — `SecurityConfig`, `UserProvisioningFilter`, `AuthUtils`, `RateLimitFilter`, `RateLimitBucketStore`
+- `config` — `OpenApiConfig`, `RateLimitProperties` (`@ConfigurationProperties(prefix = "app.ratelimit")`)
 - `exception` — `LubeLogException` base + specific exceptions + `GlobalExceptionHandler`
 
 > Note: the business class for service-type *configuration on a vehicle* is `VehicleServiceService`
@@ -145,6 +138,20 @@ needed, and production config doesn't change for tests.
 `GlobalExceptionHandler` (`@RestControllerAdvice`) catches `LubeLogException` (the base class,
 which carries an HTTP status) and returns a JSON `ErrorResponse(int status, String message)`.
 New error cases should extend `LubeLogException`.
+
+### Rate limiting
+
+`RateLimitFilter` (a `OncePerRequestFilter`) enforces a global per-user token bucket over
+`/api/**` (it skips non-`/api` paths and the public `/api/dev/**` helpers via `shouldNotFilter`).
+It runs *after* `UserProvisioningFilter`, so the JWT is already in the `SecurityContextHolder`; the
+bucket key is `user:<sub>` read straight from the token (no DB hit), falling back to `ip:<addr>`
+when unauthenticated. `RateLimitBucketStore` holds one in-memory Bucket4j bucket per key in a
+`ConcurrentHashMap` (lazy creation, no eviction — fine for a single instance; would need Redis to go
+multi-instance). Limits come from `RateLimitProperties` (`app.ratelimit.{enabled,capacity,refill-tokens,refill-duration}`;
+prod default 100 tokens / minute). Because the filter runs before the `DispatcherServlet`, it can't
+rely on `GlobalExceptionHandler` — on rejection it writes the `429` body directly in the same
+`{status, message}` shape. The filter is wired into both `SecurityConfig` and (for tests)
+`support.TestSecurityConfig`, and is disabled by default in the `test` profile.
 
 ---
 
@@ -272,7 +279,8 @@ cd frontend && npm install && npm run dev
 
 - **Integration tests** for all endpoints (happy paths + key error cases), using Testcontainers
   for anything touching the database: `VehicleControllerIT`, `ServiceTypeControllerIT`,
-  `VehicleServiceControllerIT`, `ServiceLogControllerIT`.
+  `VehicleServiceControllerIT`, `ServiceLogControllerIT`. `RateLimitFilterIT` re-enables rate
+  limiting (disabled by default in tests) with `capacity=5` and asserts the 6th request returns `429`.
 - **Unit tests** for non-trivial service logic: `UserServiceTest`, `UserProvisioningFilterTest`,
   `VinClientTest`.
 - `support.TestSecurityConfig` provides a mock JWT filter chain via the `test-override` property

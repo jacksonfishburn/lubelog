@@ -44,3 +44,8 @@ app:
   base-url: https://lubelog.jacksonfishburn.dev
   mail:
     from: ${MAIL_FROM:noreply@lubelog.jacksonfishburn.dev}
+  ratelimit:
+    enabled: true
+    capacity: 100
+    refill-tokens: 100
+    refill-duration: PT1M

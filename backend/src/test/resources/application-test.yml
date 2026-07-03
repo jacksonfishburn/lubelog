@@ -12,3 +12,8 @@ spring:
 app:
   mail:
     from: test@lubelog.local
+  ratelimit:
+    enabled: false
+    capacity: 100
+    refill-tokens: 100
+    refill-duration: PT1M

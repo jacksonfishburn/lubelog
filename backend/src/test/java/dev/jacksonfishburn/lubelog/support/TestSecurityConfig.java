@@ -16,6 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import dev.jacksonfishburn.lubelog.config.RateLimitProperties;
+import dev.jacksonfishburn.lubelog.security.RateLimitBucketStore;
+import dev.jacksonfishburn.lubelog.security.RateLimitFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,11 +40,14 @@ public class TestSecurityConfig {
 
     @Bean
     @ConditionalOnProperty(name = "app.security.test-override.enabled", havingValue = "true")
-    public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain testSecurityFilterChain(HttpSecurity http,
+            RateLimitBucketStore rateLimitBucketStore, RateLimitProperties rateLimitProperties) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                .addFilterBefore(new MockJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new MockJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new RateLimitFilter(rateLimitBucketStore, rateLimitProperties),
+                        MockJwtAuthenticationFilter.class);
         return http.build();
     }
 

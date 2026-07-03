@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import dev.jacksonfishburn.lubelog.config.RateLimitProperties;
 import dev.jacksonfishburn.lubelog.service.UserService;
 
 /**
@@ -26,7 +27,8 @@ public class SecurityConfig {
 
     @Bean
     @ConditionalOnProperty(name = "app.security.test-override.enabled", havingValue = "false", matchIfMissing = true)
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService,
+            RateLimitBucketStore rateLimitBucketStore, RateLimitProperties rateLimitProperties) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -40,7 +42,9 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                .addFilterAfter(new UserProvisioningFilter(userService), BearerTokenAuthenticationFilter.class);
+                .addFilterAfter(new UserProvisioningFilter(userService), BearerTokenAuthenticationFilter.class)
+                .addFilterAfter(new RateLimitFilter(rateLimitBucketStore, rateLimitProperties),
+                        UserProvisioningFilter.class);
         return http.build();
     }
 }
