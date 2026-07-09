@@ -1,4 +1,6 @@
-package dev.jacksonfishburn.lubelog.dto;
+package dev.jacksonfishburn.lubelog.dto.reminder;
+
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleInfo;
 
 import java.time.LocalDate;
 

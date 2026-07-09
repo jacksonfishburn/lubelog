@@ -28,8 +28,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.jacksonfishburn.lubelog.TestcontainersConfiguration;
-import dev.jacksonfishburn.lubelog.dto.LogDetailRequest;
-import dev.jacksonfishburn.lubelog.dto.LogRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogDetailRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogRequest;
 import dev.jacksonfishburn.lubelog.entity.ServiceLog;
 import dev.jacksonfishburn.lubelog.entity.ServiceLogDetail;
 import dev.jacksonfishburn.lubelog.entity.ServiceType;

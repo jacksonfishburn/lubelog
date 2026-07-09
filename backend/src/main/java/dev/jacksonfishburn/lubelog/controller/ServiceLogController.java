@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.jacksonfishburn.lubelog.dto.LogDetailRequest;
-import dev.jacksonfishburn.lubelog.dto.LogDetailResponse;
-import dev.jacksonfishburn.lubelog.dto.LogRequest;
-import dev.jacksonfishburn.lubelog.dto.LogResponse;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogDetailRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogDetailResponse;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogResponse;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.exception.InvalidRequestException;
 import dev.jacksonfishburn.lubelog.security.AuthUtils;

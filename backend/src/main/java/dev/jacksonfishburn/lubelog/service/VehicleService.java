@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import dev.jacksonfishburn.lubelog.dto.VehicleRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleResponse;
-import dev.jacksonfishburn.lubelog.dto.VehicleUpdateRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleResponse;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleUpdateRequest;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.entity.Vehicle;
 import dev.jacksonfishburn.lubelog.exception.AccessDeniedException;

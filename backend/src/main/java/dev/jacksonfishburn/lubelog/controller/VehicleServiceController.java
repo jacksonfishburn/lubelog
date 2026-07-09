@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.jacksonfishburn.lubelog.dto.VehicleServiceRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleServiceResponse;
+import dev.jacksonfishburn.lubelog.dto.vehicleservice.VehicleServiceRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicleservice.VehicleServiceResponse;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.security.AuthUtils;
 import dev.jacksonfishburn.lubelog.service.VehicleServiceService;

@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import dev.jacksonfishburn.lubelog.dto.VehicleServiceRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleServiceResponse;
+import dev.jacksonfishburn.lubelog.dto.vehicleservice.VehicleServiceRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicleservice.VehicleServiceResponse;
 import dev.jacksonfishburn.lubelog.entity.ServiceType;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.entity.Vehicle;

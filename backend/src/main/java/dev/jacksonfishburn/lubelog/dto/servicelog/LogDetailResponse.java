@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.dto;
+package dev.jacksonfishburn.lubelog.dto.servicelog;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.dto;
+package dev.jacksonfishburn.lubelog.dto.vehicle;
 
 public record VehicleInfo(
         String nickname,

@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.dto;
+package dev.jacksonfishburn.lubelog.dto.vehicle;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

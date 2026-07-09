@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import dev.jacksonfishburn.lubelog.dto.LogResponse;
-import dev.jacksonfishburn.lubelog.dto.ServiceReminderEmailRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleInfo;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogResponse;
+import dev.jacksonfishburn.lubelog.dto.reminder.ServiceReminderEmailRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleInfo;
 import dev.jacksonfishburn.lubelog.entity.ServiceReminder;
 import dev.jacksonfishburn.lubelog.entity.Vehicle;
 import dev.jacksonfishburn.lubelog.entity.VehicleService;

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.jacksonfishburn.lubelog.dto.ServiceTypeRequest;
-import dev.jacksonfishburn.lubelog.dto.ServiceTypeResponse;
+import dev.jacksonfishburn.lubelog.dto.servicetype.ServiceTypeRequest;
+import dev.jacksonfishburn.lubelog.dto.servicetype.ServiceTypeResponse;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.security.AuthUtils;
 import dev.jacksonfishburn.lubelog.service.ServiceTypeService;

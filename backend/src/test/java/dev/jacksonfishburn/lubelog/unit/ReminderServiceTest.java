@@ -19,8 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.jacksonfishburn.lubelog.dto.LogResponse;
-import dev.jacksonfishburn.lubelog.dto.ServiceReminderEmailRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogResponse;
+import dev.jacksonfishburn.lubelog.dto.reminder.ServiceReminderEmailRequest;
 import dev.jacksonfishburn.lubelog.entity.ServiceReminder;
 import dev.jacksonfishburn.lubelog.entity.ServiceType;
 import dev.jacksonfishburn.lubelog.entity.User;

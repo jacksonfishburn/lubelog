@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import dev.jacksonfishburn.lubelog.dto.ServiceReminderEmailRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleInfo;
+import dev.jacksonfishburn.lubelog.dto.reminder.ServiceReminderEmailRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleInfo;
 import dev.jacksonfishburn.lubelog.service.ReminderEmailService;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;

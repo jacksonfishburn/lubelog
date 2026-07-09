@@ -15,7 +15,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 
 import dev.jacksonfishburn.lubelog.client.VinClient;
-import dev.jacksonfishburn.lubelog.dto.VinDecodeResponse;
+import dev.jacksonfishburn.lubelog.dto.vin.VinDecodeResponse;
 import dev.jacksonfishburn.lubelog.exception.VinLookupException;
 
 class VinServiceTest {

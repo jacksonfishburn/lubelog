@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.dto;
+package dev.jacksonfishburn.lubelog.dto.servicetype;
 
 import java.time.Instant;
 import java.util.UUID;

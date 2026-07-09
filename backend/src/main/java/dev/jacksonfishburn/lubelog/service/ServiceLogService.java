@@ -6,10 +6,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import dev.jacksonfishburn.lubelog.dto.LogDetailRequest;
-import dev.jacksonfishburn.lubelog.dto.LogDetailResponse;
-import dev.jacksonfishburn.lubelog.dto.LogRequest;
-import dev.jacksonfishburn.lubelog.dto.LogResponse;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogDetailRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogDetailResponse;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogRequest;
+import dev.jacksonfishburn.lubelog.dto.servicelog.LogResponse;
 import dev.jacksonfishburn.lubelog.entity.ServiceLog;
 import dev.jacksonfishburn.lubelog.entity.ServiceLogDetail;
 import dev.jacksonfishburn.lubelog.entity.User;

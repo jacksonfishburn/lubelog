@@ -7,8 +7,8 @@ import java.util.stream.Stream;
 import dev.jacksonfishburn.lubelog.entity.ServiceType;
 import org.springframework.stereotype.Service;
 
-import dev.jacksonfishburn.lubelog.dto.ServiceTypeRequest;
-import dev.jacksonfishburn.lubelog.dto.ServiceTypeResponse;
+import dev.jacksonfishburn.lubelog.dto.servicetype.ServiceTypeRequest;
+import dev.jacksonfishburn.lubelog.dto.servicetype.ServiceTypeResponse;
 import dev.jacksonfishburn.lubelog.entity.User;
 import dev.jacksonfishburn.lubelog.exception.AccessDeniedException;
 import dev.jacksonfishburn.lubelog.exception.CannotDeleteGlobalServiceTypeException;

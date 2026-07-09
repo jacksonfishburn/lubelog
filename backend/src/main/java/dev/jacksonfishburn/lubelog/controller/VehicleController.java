@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.jacksonfishburn.lubelog.dto.VehicleRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleResponse;
-import dev.jacksonfishburn.lubelog.dto.VehicleUpdateRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleResponse;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleUpdateRequest;
 import dev.jacksonfishburn.lubelog.service.VehicleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

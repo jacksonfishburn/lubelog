@@ -9,8 +9,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import dev.jacksonfishburn.lubelog.dto.ServiceReminderEmailRequest;
-import dev.jacksonfishburn.lubelog.dto.VehicleInfo;
+import dev.jacksonfishburn.lubelog.dto.reminder.ServiceReminderEmailRequest;
+import dev.jacksonfishburn.lubelog.dto.vehicle.VehicleInfo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
