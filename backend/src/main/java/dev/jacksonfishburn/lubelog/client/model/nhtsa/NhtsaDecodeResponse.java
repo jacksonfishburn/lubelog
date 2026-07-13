@@ -1,4 +1,4 @@
-package dev.jacksonfishburn.lubelog.client.model;
+package dev.jacksonfishburn.lubelog.client.model.nhtsa;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

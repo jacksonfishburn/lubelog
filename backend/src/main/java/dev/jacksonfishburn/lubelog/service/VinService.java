@@ -1,12 +1,12 @@
 package dev.jacksonfishburn.lubelog.service;
 
 import dev.jacksonfishburn.lubelog.client.VinClient;
-import dev.jacksonfishburn.lubelog.client.model.NhtsaDecodeResult;
+import dev.jacksonfishburn.lubelog.client.model.nhtsa.NhtsaDecodeResult;
 import dev.jacksonfishburn.lubelog.dto.vin.VinDecodeResponse;
 import dev.jacksonfishburn.lubelog.exception.VinLookupException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import dev.jacksonfishburn.lubelog.client.model.NhtsaDecodeResponse;
+import dev.jacksonfishburn.lubelog.client.model.nhtsa.NhtsaDecodeResponse;
 
 @Service
 @RequiredArgsConstructor

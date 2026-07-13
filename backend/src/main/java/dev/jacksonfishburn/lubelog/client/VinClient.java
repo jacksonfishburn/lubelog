@@ -1,6 +1,6 @@
 package dev.jacksonfishburn.lubelog.client;
 
-import dev.jacksonfishburn.lubelog.client.model.NhtsaDecodeResponse;
+import dev.jacksonfishburn.lubelog.client.model.nhtsa.NhtsaDecodeResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
