@@ -52,3 +52,6 @@ app:
 
 perplexity:
   api-key: ${PERPLEXITY_API_KEY:}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}

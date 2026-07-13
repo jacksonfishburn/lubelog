@@ -3,7 +3,7 @@
 > **Maintenance note:** This document is the source of truth for the *current* state of the
 > project and is meant to be handed to an AI for design discussions. Keep it accurate as the
 > project evolves — see the maintenance rule in `CLAUDE.md`. Last verified against the codebase
-> on **2026-07-03**.
+> on **2026-07-13**.
 
 LubeLog is a vehicle maintenance tracker — a learning project and portfolio piece. Users log
 service history, configure per-vehicle service intervals, and (will) get upcoming maintenance
@@ -106,7 +106,7 @@ Guiding rules (from `CLAUDE.md`):
 - `service` — business logic (`VehicleService`, `ServiceTypeService`, `VehicleServiceService`, `ServiceLogService`, `UserService`, `ReminderEmailService`, `ReminderService`)
 - `controller` — REST controllers
 - `dto` — request/response records
-- `client` — `VinClient` (NHTSA vPIC integration)
+- `client` — `VinClient` (NHTSA vPIC), `PerplexityClient`, `GeminiClient`
 - `security` — `SecurityConfig`, `UserProvisioningFilter`, `AuthUtils`, `RateLimitFilter`, `RateLimitBucketStore`, `RateLimitBucketSweeper`
 - `config` — `OpenApiConfig`, `RateLimitProperties` (`@ConfigurationProperties(prefix = "app.ratelimit")`)
 - `exception` — `LubeLogException` base + specific exceptions + `GlobalExceptionHandler`
