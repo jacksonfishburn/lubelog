@@ -1,6 +1,8 @@
 package dev.jacksonfishburn.lubelog.client;
 
 import dev.jacksonfishburn.lubelog.client.model.nhtsa.NhtsaDecodeResponse;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -8,14 +10,17 @@ import org.springframework.web.client.RestClientException;
 import dev.jacksonfishburn.lubelog.exception.VinLookupException;
 
 @Component
+@RequiredArgsConstructor
 public class VinClient {
 
     private static final String DECODE_VIN_URL =
             "https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/{vin}?format=json";
 
-    private final RestClient restClient;
+    private final RestClient.Builder restClientBuilder;
+    private RestClient restClient;
 
-    public VinClient(RestClient.Builder restClientBuilder) {
+    @PostConstruct
+    void init() {
         this.restClient = restClientBuilder.build();
     }
 

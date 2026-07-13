@@ -49,3 +49,6 @@ app:
     capacity: 100
     refill-tokens: 100
     refill-duration: PT1M
+
+perplexity:
+  api-key: ${PERPLEXITY_API_KEY:}

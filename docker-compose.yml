@@ -57,6 +57,7 @@ services:
       MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH}
       MAIL_SMTP_STARTTLS: ${MAIL_SMTP_STARTTLS}
       MAIL_FROM: ${MAIL_FROM}
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY}
     ports:
       - "8081:8081"
     depends_on:
