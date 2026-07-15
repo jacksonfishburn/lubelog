@@ -63,11 +63,6 @@ export function AiFindPartsPage() {
         </div>
       </header>
 
-      <Banner variant="warn">
-        AI suggestions can be wrong. Double-check fitment, specs, and retailer links before
-        buying.
-      </Banner>
-
       {(typesError || fleet.error) && (
         <Banner>{typesError ?? fleet.error}</Banner>
       )}
@@ -105,6 +100,10 @@ export function AiFindPartsPage() {
               placeholder={typesLoading ? 'Loading…' : 'Select a service type'}
               required
             />
+            <p className="ai-find-form__disclaimer">
+              AI suggestions can be wrong. Double-check fitment, specs, and retailer links
+              before buying.
+            </p>
             <div className="ai-find-form__actions">
               <Button
                 variant="primary"
