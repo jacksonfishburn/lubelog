@@ -1,28 +1,33 @@
 {
-  "schema": {
-    "type": "object",
-    "properties": {
-      "parts": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer"
+  "type": "json_schema",
+  "json_schema": {
+    "name": "selected_parts",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "title": {
+                "type": "string"
+              }
             },
-            "title": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "title"
-          ]
+            "required": [
+              "id",
+              "title"
+            ]
+          }
         }
-      }
+      },
+      "required": [
+        "parts"
+      ]
     },
-    "required": [
-      "parts"
-    ]
+    "strict": true
   }
 }

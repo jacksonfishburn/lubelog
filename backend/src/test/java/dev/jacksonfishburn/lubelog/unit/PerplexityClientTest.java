@@ -9,7 +9,10 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.jacksonfishburn.lubelog.client.PerplexityClient;
+import dev.jacksonfishburn.lubelog.client.model.ai.PerplexityGenerateRequest;
 import dev.jacksonfishburn.lubelog.client.model.ai.PerplexitySearchRequest;
 import dev.jacksonfishburn.lubelog.client.model.ai.PerplexitySearchResponse;
 import dev.jacksonfishburn.lubelog.exception.AiApiAccessException;
@@ -161,6 +164,116 @@ class PerplexityClientTest {
         )))
                 .isInstanceOf(AiApiAccessException.class)
                 .hasMessageContaining("find parts");
+        mockServer.verify();
+    }
+
+    @Test
+    void generate_returnsParsedResponse_whenPerplexityCompletes() {
+        ObjectNode responseFormat = new ObjectMapper().createObjectNode();
+        responseFormat.put("type", "json_schema");
+        ObjectNode jsonSchema = responseFormat.putObject("json_schema");
+        jsonSchema.put("name", "parts");
+        jsonSchema.put("strict", true);
+        jsonSchema.putObject("schema").put("type", "object");
+
+        mockServer.expect(requestTo(RESPONSES_URL))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header(HttpHeaders.AUTHORIZATION, "Bearer " + API_KEY))
+                .andExpect(content().json("""
+                        {
+                          "input": "get parts for an oil change on a 2015 Honda Civic",
+                          "stream": false,
+                          "model": "openai/gpt-5.1",
+                          "response_format": {
+                            "type": "json_schema",
+                            "json_schema": {
+                              "name": "parts",
+                              "schema": { "type": "object" },
+                              "strict": true
+                            }
+                          }
+                        }
+                        """))
+                .andRespond(withSuccess("""
+                        {
+                          "id": "resp_gen_123",
+                          "status": "completed",
+                          "output": [
+                            {
+                              "type": "message",
+                              "role": "assistant",
+                              "status": "completed",
+                              "content": [
+                                {
+                                  "type": "output_text",
+                                  "text": "{\\"parts\\":[{\\"name\\":\\"Engine oil\\",\\"quantity\\":5}]}"
+                                }
+                              ]
+                            }
+                          ],
+                          "usage": {
+                            "input_tokens": 91,
+                            "output_tokens": 271,
+                            "total_tokens": 362,
+                            "cost": {
+                              "currency": "USD",
+                              "total_cost": 0.00282
+                            }
+                          }
+                        }
+                        """, MediaType.APPLICATION_JSON));
+
+        PerplexitySearchResponse response = perplexityClient.generate(new PerplexityGenerateRequest(
+                "get parts for an oil change on a 2015 Honda Civic",
+                false,
+                "openai/gpt-5.1",
+                responseFormat
+        ));
+
+        assertThat(response.id()).isEqualTo("resp_gen_123");
+        assertThat(response.status()).isEqualTo("completed");
+        assertThat(response.answerText()).isEqualTo("{\"parts\":[{\"name\":\"Engine oil\",\"quantity\":5}]}");
+        assertThat(response.usage().totalTokens()).isEqualTo(362);
+        assertThat(response.usage().cost().totalCost()).isEqualTo(0.00282);
+        mockServer.verify();
+    }
+
+    @Test
+    void generate_throwsAiFailureException_whenStatusIsNotCompleted() {
+        mockServer.expect(requestTo(RESPONSES_URL))
+                .andRespond(withSuccess("""
+                        {
+                          "id": "resp_failed",
+                          "status": "failed",
+                          "output": [],
+                          "usage": null
+                        }
+                        """, MediaType.APPLICATION_JSON));
+
+        assertThatThrownBy(() -> perplexityClient.generate(new PerplexityGenerateRequest(
+                "get parts",
+                false,
+                "openai/gpt-5.1",
+                null
+        )))
+                .isInstanceOf(AiFailureException.class)
+                .hasMessageContaining("failed");
+        mockServer.verify();
+    }
+
+    @Test
+    void generate_throwsAiApiAccessException_whenPerplexityReturnsErrorStatus() {
+        mockServer.expect(requestTo(RESPONSES_URL))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        assertThatThrownBy(() -> perplexityClient.generate(new PerplexityGenerateRequest(
+                "get parts",
+                false,
+                "openai/gpt-5.1",
+                null
+        )))
+                .isInstanceOf(AiApiAccessException.class)
+                .hasMessageContaining("get parts");
         mockServer.verify();
     }
 }

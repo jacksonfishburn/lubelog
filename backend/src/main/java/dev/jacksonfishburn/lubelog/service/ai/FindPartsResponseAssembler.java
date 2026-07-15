@@ -19,7 +19,7 @@ public class FindPartsResponseAssembler {
 
     public AiFindPartsResponse assemble(SelectedParts selectedParts, PerplexitySearchResponse searchResults) {
         if (selectedParts == null || selectedParts.parts() == null || selectedParts.parts().isEmpty()) {
-            throw new AiFailureException("Gemini did not select any parts");
+            throw new AiFailureException("Perplexity did not select any parts");
         }
 
         Map<Integer, SearchResult> resultsById = searchResults.allResults().stream()

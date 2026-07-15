@@ -3,7 +3,7 @@
 > **Maintenance note:** This document is the source of truth for the *current* state of the
 > project and is meant to be handed to an AI for design discussions. Keep it accurate as the
 > project evolves — see the maintenance rule in `CLAUDE.md`. Last verified against the codebase
-> on **2026-07-14**.
+> on **2026-07-15**.
 
 LubeLog is a vehicle maintenance tracker — a learning project and portfolio piece. Users log
 service history, configure per-vehicle service intervals, and (will) get upcoming maintenance
@@ -70,7 +70,7 @@ frontend is currently wired to the real backend API (via Vite proxy) with Keyclo
 - GitHub Actions CI/CD pipeline.
 - Email notifications for upcoming/overdue services; scheduled reminders.
 - Rate limiting (Bucket4j) — global per-user token bucket over `/api/**`.
-- AI-assisted parts lookup per service type (Gemini parts list + Perplexity links + Gemini selection).
+- AI-assisted parts lookup per service type (Perplexity structured parts list + Perplexity search links + Perplexity structured selection).
 
 **Up next** (no particular order):
 
@@ -104,10 +104,10 @@ Guiding rules (from `CLAUDE.md`):
 - `entity` — `User`, `Vehicle`, `ServiceType`, `VehicleService`, `ServiceLog`, `ServiceLogDetail`, `ServiceReminder`
 - `repository` — Spring Data JPA repositories
 - `service` — business logic (`VehicleService`, `ServiceTypeService`, `VehicleServiceService`, `ServiceLogService`, `UserService`, `ReminderEmailService`, `ReminderService`, `AiService`)
-- `service.ai` — AI find-parts helpers (`AiSchemaLoader`, `GeminiJsonParser`, `FindPartsPromptBuilder`, `FindPartsResponseAssembler`)
+- `service.ai` — AI find-parts helpers (`AiSchemaLoader`, `AiJsonParser`, `FindPartsPromptBuilder`, `FindPartsResponseAssembler`)
 - `controller` — REST controllers
 - `dto` — request/response records
-- `client` — `VinClient` (NHTSA vPIC), `PerplexityClient`, `GeminiClient`
+- `client` — `VinClient` (NHTSA vPIC), `PerplexityClient`
 - `security` — `SecurityConfig`, `UserProvisioningFilter`, `AuthUtils`, `RateLimitFilter`, `RateLimitBucketStore`, `RateLimitBucketSweeper`
 - `config` — `OpenApiConfig`, `RateLimitProperties` (`@ConfigurationProperties(prefix = "app.ratelimit")`)
 - `exception` — `LubeLogException` base + specific exceptions + `GlobalExceptionHandler`
@@ -238,10 +238,11 @@ All under `/api`, all require a valid JWT. Ownership is enforced in the service 
 **AI** (`/api/ai`)
 
 - `GET /api/ai/find-parts/vehicles/{vehicleId}/service-types/{serviceTypeId}` — suggests
-  purchasable parts for a service on a vehicle. Pipeline: Gemini (required parts list) →
-  Perplexity (product links) → Gemini (select best by search-result id) →
-  `AiFindPartsResponse` (`List<ServicePart>` with `url`, `title`, `description`). Failures
-  from unusable AI output map to `AiFailureException` (503); schema load failures are 500.
+  purchasable parts for a service on a vehicle. Pipeline: Perplexity structured generate
+  (required parts list) → Perplexity search (product links) → Perplexity structured generate
+  (select best by search-result id) → `AiFindPartsResponse` (`List<ServicePart>` with `url`,
+  `title`, `description`). Failures from unusable AI output map to `AiFailureException` (503);
+  schema load failures are 500.
 
 ---
 
@@ -295,6 +296,7 @@ cd frontend && npm install && npm run dev
   limiting (disabled by default in tests) with `capacity=5` and asserts the 6th request returns `429`.
 - **Unit tests** for non-trivial service logic: `UserServiceTest`, `UserProvisioningFilterTest`,
   `VinClientTest`, `RateLimitBucketStoreTest` (bucket reuse + fully-replenished eviction),
-  `GeminiJsonParserTest`, `FindPartsPromptBuilderTest`, `FindPartsResponseAssemblerTest`.
+  `AiJsonParserTest`, `FindPartsPromptBuilderTest`, `FindPartsResponseAssemblerTest`,
+  `PerplexityClientTest`.
 - `support.TestSecurityConfig` provides a mock JWT filter chain via the `test-override` property
   so tests authenticate without a real Keycloak.

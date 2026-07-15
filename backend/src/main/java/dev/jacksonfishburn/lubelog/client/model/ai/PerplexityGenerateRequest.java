@@ -7,8 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record GeminiRequest(
-        String model,
+public record PerplexityGenerateRequest(
         String input,
+        boolean stream,
+        String model,
         @JsonProperty("response_format") JsonNode responseFormat
 ) {}
