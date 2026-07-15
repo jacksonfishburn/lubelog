@@ -296,7 +296,7 @@ export function CockpitPage() {
               }
             />
           ) : (
-            sortedLogs.slice(0, 8).map((log) => (
+            sortedLogs.map((log) => (
               <LogEntry
                 key={log.id}
                 log={log}
@@ -306,13 +306,6 @@ export function CockpitPage() {
                 onDeleteDetail={(id) => void deleteDetail(id).then(() => fleet.refresh())}
               />
             ))
-          )}
-          {sortedLogs.length > 8 && (
-            <div style={{ padding: 'var(--sp-3) var(--sp-4)' }}>
-              <Link to="/log" className="btn btn--ghost btn--sm">
-                View all {sortedLogs.length} entries →
-              </Link>
-            </div>
           )}
         </Panel>
       </div>

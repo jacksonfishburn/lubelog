@@ -66,7 +66,7 @@ frontend is currently wired to the real backend API (via Vite proxy) with Keyclo
 - Environment-based config profiles (`dev` for native local runs vs. default/containerized).
 - Established vertical-slice pattern with integration + unit test coverage.
 - Springdoc / Swagger UI.
-- React Frontend — Dashboard, Fleet, vehicle cockpit, Service Log, Service Types, and
+- React Frontend — Dashboard, Fleet, vehicle cockpit, Service Types, and
   AI Find Parts (`/ai-find-parts`; also a Generate panel on the vehicle cockpit).
 - GitHub Actions CI/CD pipeline.
 - Email notifications for upcoming/overdue services; scheduled reminders.

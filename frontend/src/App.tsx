@@ -4,7 +4,6 @@ import { AppShell } from './components/layout/AppShell';
 import { DashboardPage } from './pages/DashboardPage';
 import { FleetPage } from './pages/FleetPage';
 import { CockpitPage } from './pages/CockpitPage';
-import { ServiceLogPage } from './pages/ServiceLogPage';
 import { ServiceTypesPage } from './pages/ServiceTypesPage';
 import { AiFindPartsPage } from './pages/AiFindPartsPage';
 
@@ -18,7 +17,6 @@ export default function App() {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="fleet" element={<FleetPage />} />
             <Route path="fleet/:vehicleId" element={<CockpitPage />} />
-            <Route path="log" element={<ServiceLogPage />} />
             <Route path="service-types" element={<ServiceTypesPage />} />
             <Route path="ai-find-parts" element={<AiFindPartsPage />} />
           </Route>

@@ -13,9 +13,8 @@ interface NavItem {
 const NAV: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: '▣' },
   { to: '/fleet', label: 'Fleet', icon: '⊞' },
-  { to: '/log', label: 'Service Log', icon: '▤' },
-  { to: '/service-types', label: 'Service Types', icon: '▦' },
   { to: '/ai-find-parts', label: 'AI Find Parts', icon: '◈' },
+  { to: '/service-types', label: 'Service Types', icon: '▤' },
 ];
 
 interface SidebarProps {
