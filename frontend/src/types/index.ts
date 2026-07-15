@@ -15,3 +15,4 @@ export type {
   CreateLogRequest,
   LogDetailRequest,
 } from './serviceLog';
+export type { ServicePart, AiFindPartsResponse } from './ai';

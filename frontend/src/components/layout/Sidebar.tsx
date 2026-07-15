@@ -15,6 +15,7 @@ const NAV: NavItem[] = [
   { to: '/fleet', label: 'Fleet', icon: '⊞' },
   { to: '/log', label: 'Service Log', icon: '▤' },
   { to: '/service-types', label: 'Service Types', icon: '▦' },
+  { to: '/ai-find-parts', label: 'AI Find Parts', icon: '◈' },
 ];
 
 interface SidebarProps {

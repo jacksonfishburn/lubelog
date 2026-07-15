@@ -581,11 +581,12 @@
 .page-grid { display: grid; gap: var(--sp-4); }
 .page-grid--vehicle-detail {
   grid-template-columns: 1.4fr 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto auto;
   align-items: start;
 }
 .vehicle-detail__status { grid-column: 1; grid-row: 1; }
 .vehicle-detail__services { grid-column: 1; grid-row: 2; }
+.vehicle-detail__find-parts { grid-column: 1; grid-row: 3; }
 .vehicle-detail__history {
   grid-column: 2;
   grid-row: 1 / -1;
@@ -607,6 +608,7 @@
   }
   .vehicle-detail__status,
   .vehicle-detail__services,
+  .vehicle-detail__find-parts,
   .vehicle-detail__history {
     grid-column: 1;
     grid-row: auto;
@@ -702,3 +704,44 @@
 
 .divider { height: 1px; background: var(--border); border: none; margin: 0; }
 .detail-adder { display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--sp-2); align-items: end; }
+
+/* AI Find Parts */
+.ai-find-form { display: flex; flex-direction: column; gap: var(--sp-3); }
+.ai-find-form__actions { display: flex; justify-content: flex-end; }
+.ai-find-form__disclaimer {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  margin: 0;
+  line-height: 1.4;
+}
+.parts-list { list-style: none; margin: 0; padding: 0; }
+.parts-list__item {
+  border-bottom: 1px solid var(--border);
+  padding: var(--sp-3) var(--sp-4);
+}
+.parts-list__item:last-child { border-bottom: none; }
+.parts-list__title {
+  font-weight: 600;
+  color: var(--accent-bright);
+  text-decoration: none;
+  display: block;
+}
+.parts-list__title:hover { text-decoration: underline; }
+.parts-list__desc {
+  font-size: 12.5px;
+  color: var(--text);
+  margin: var(--sp-2) 0 0;
+  line-height: 1.45;
+}
+.parts-list__url {
+  display: block;
+  margin-top: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  word-break: break-all;
+}
+.parts-list__url:hover { color: var(--accent-bright); }
+.parts-list__state { padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3); }
+.parts-list__hint { margin: 0; font-size: 12.5px; color: var(--text-dim); }

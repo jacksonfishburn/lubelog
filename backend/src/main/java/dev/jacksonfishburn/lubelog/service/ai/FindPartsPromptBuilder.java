@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class FindPartsPromptBuilder {
 
     public String buildPartsListPrompt(VehicleResponse vehicle, String serviceTypeName) {
-        return "What parts do I need for a " + serviceTypeName + " on a " + formatVehicle(vehicle) + "? "
+        return "What parts do I need for a " + serviceTypeName + " service on a " + formatVehicle(vehicle) + "? "
                 + "List only the parts required to complete this service. "
                 + "Include a specification when relevant (e.g. oil viscosity, filter type). "
                 + "Include quantity for each part.";

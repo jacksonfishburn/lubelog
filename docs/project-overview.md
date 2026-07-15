@@ -66,7 +66,8 @@ frontend is currently wired to the real backend API (via Vite proxy) with Keyclo
 - Environment-based config profiles (`dev` for native local runs vs. default/containerized).
 - Established vertical-slice pattern with integration + unit test coverage.
 - Springdoc / Swagger UI.
-- React Frontend
+- React Frontend — Dashboard, Fleet, vehicle cockpit, Service Log, Service Types, and
+  AI Find Parts (`/ai-find-parts`; also a Generate panel on the vehicle cockpit).
 - GitHub Actions CI/CD pipeline.
 - Email notifications for upcoming/overdue services; scheduled reminders.
 - Rate limiting (Bucket4j) — global per-user token bucket over `/api/**`.
@@ -242,7 +243,8 @@ All under `/api`, all require a valid JWT. Ownership is enforced in the service 
   (required parts list) → Perplexity search (product links) → Perplexity structured generate
   (select best by search-result id) → `AiFindPartsResponse` (`List<ServicePart>` with `url`,
   `title`, `description`). Failures from unusable AI output map to `AiFailureException` (503);
-  schema load failures are 500.
+  schema load failures are 500. Frontend: `/ai-find-parts` page + vehicle-cockpit Generate
+  panel (deep-links with `vehicleId` / `serviceTypeId` query params and auto-runs).
 
 ---
 

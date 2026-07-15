@@ -19,6 +19,7 @@ import { EmptyState } from '../components/shared/EmptyState';
 import { ConfirmDialog } from '../components/shared/ConfirmDialog';
 import { StatusBadge } from '../components/shared/StatusBadge';
 import { StatusIcon, gaugeClassForStatus } from '../components/shared/StatusIcon';
+import { SelectField } from '../components/shared/fields';
 import { SERVICE_STATUS, STATUS_LABEL } from '../lib/serviceStatus';
 import {
   formatVehicleName,
@@ -62,6 +63,7 @@ export function CockpitPage() {
   const [deleteSvcTarget, setDeleteSvcTarget] = useState<VehicleService | null>(null);
   const [deleteLogTarget, setDeleteLogTarget] = useState<ServiceLog | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [findPartsTypeId, setFindPartsTypeId] = useState('');
 
   useEffect(() => {
     if (vehicleId) setSelectedVehicleId(vehicleId);
@@ -247,6 +249,36 @@ export function CockpitPage() {
               />
             ))
           )}
+        </Panel>
+
+        <Panel className="vehicle-detail__find-parts" title="AI Find Parts">
+          <div className="ai-find-form">
+            <SelectField
+              label="Service Type"
+              value={findPartsTypeId}
+              onChange={setFindPartsTypeId}
+              options={serviceTypes.map((t) => ({ value: t.id, label: t.name }))}
+              placeholder="Select a service type"
+              required
+            />
+            <p className="ai-find-form__disclaimer">
+              AI can be wrong — double-check fitment and links before buying.
+            </p>
+            <div className="ai-find-form__actions">
+              <Button
+                variant="primary"
+                disabled={!findPartsTypeId}
+                onClick={() => {
+                  if (!vehicleId || !findPartsTypeId) return;
+                  navigate(
+                    `/ai-find-parts?vehicleId=${encodeURIComponent(vehicleId)}&serviceTypeId=${encodeURIComponent(findPartsTypeId)}`,
+                  );
+                }}
+              >
+                Generate
+              </Button>
+            </div>
+          </div>
         </Panel>
 
         <Panel className="vehicle-detail__history" title="Service History" flush>

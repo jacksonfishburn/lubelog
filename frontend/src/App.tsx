@@ -6,6 +6,7 @@ import { FleetPage } from './pages/FleetPage';
 import { CockpitPage } from './pages/CockpitPage';
 import { ServiceLogPage } from './pages/ServiceLogPage';
 import { ServiceTypesPage } from './pages/ServiceTypesPage';
+import { AiFindPartsPage } from './pages/AiFindPartsPage';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="fleet/:vehicleId" element={<CockpitPage />} />
             <Route path="log" element={<ServiceLogPage />} />
             <Route path="service-types" element={<ServiceTypesPage />} />
+            <Route path="ai-find-parts" element={<AiFindPartsPage />} />
           </Route>
         </Routes>
       </AppStateProvider>
