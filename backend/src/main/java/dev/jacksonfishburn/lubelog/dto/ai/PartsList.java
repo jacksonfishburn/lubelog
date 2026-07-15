@@ -1,4 +1,8 @@
 package dev.jacksonfishburn.lubelog.dto.ai;
 
-public record PartsList() {
+import java.util.List;
+
+public record PartsList(List<Part> parts) {
+
+    public record Part(String name, String specification, int quantity) {}
 }

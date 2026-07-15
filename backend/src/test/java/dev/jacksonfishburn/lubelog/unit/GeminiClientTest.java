@@ -9,6 +9,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+import com.fasterxml.jackson.databind.node.TextNode;
 import dev.jacksonfishburn.lubelog.client.GeminiClient;
 import dev.jacksonfishburn.lubelog.client.model.ai.GeminiRequest;
 import dev.jacksonfishburn.lubelog.client.model.ai.GeminiResponse;
@@ -26,7 +27,7 @@ class GeminiClientTest {
 
     private static final String API_KEY = "test-gemini-key";
     private static final String INTERACTIONS_URL =
-            "https://generativelanguage.googleapis.com/v1beta2/interactions";
+            "https://generativelanguage.googleapis.com/v1beta/interactions";
 
     private MockRestServiceServer mockServer;
     private GeminiClient geminiClient;
@@ -71,16 +72,13 @@ class GeminiClientTest {
         GeminiResponse response = geminiClient.generate(new GeminiRequest(
                 "gemini-3.5-flash",
                 "Summarize air filter options for a 2011 Subaru Impreza 2.5i",
-                "text"
+                TextNode.valueOf("text")
         ));
 
         assertThat(response.id()).isEqualTo("int_123");
         assertThat(response.status()).isEqualTo("completed");
         assertThat(response.steps()).hasSize(1);
-        assertThat(response.steps().getFirst().type()).isEqualTo("model_output");
-        assertThat(response.steps().getFirst().content()).hasSize(1);
-        assertThat(response.steps().getFirst().content().getFirst().type()).isEqualTo("text");
-        assertThat(response.steps().getFirst().content().getFirst().text())
+        assertThat(response.outputText())
                 .isEqualTo("OEM and aftermarket air filters are both available for this vehicle.");
         mockServer.verify();
     }
@@ -99,7 +97,7 @@ class GeminiClientTest {
         assertThatThrownBy(() -> geminiClient.generate(new GeminiRequest(
                 "gemini-3.5-flash",
                 "summarize parts",
-                "text"
+                null
         )))
                 .isInstanceOf(AiFailureException.class)
                 .hasMessageContaining("failed");
@@ -114,7 +112,7 @@ class GeminiClientTest {
         assertThatThrownBy(() -> geminiClient.generate(new GeminiRequest(
                 "gemini-3.5-flash",
                 "summarize parts",
-                "text"
+                null
         )))
                 .isInstanceOf(AiApiAccessException.class)
                 .hasMessageContaining("summarize parts");

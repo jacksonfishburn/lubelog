@@ -21,7 +21,7 @@ public class AiController {
     private final AiService aiService;
     private final AuthUtils authUtils;
 
-    @GetMapping("/find-parts/vehicles/{vehicle-id}/service-types/{service-type-id}")
+    @GetMapping("/find-parts/vehicles/{vehicleId}/service-types/{serviceTypeId}")
     public ResponseEntity<AiFindPartsResponse> findParts(
             @PathVariable UUID vehicleId, @PathVariable UUID serviceTypeId) {
         User user = authUtils.getCurrentUser();
